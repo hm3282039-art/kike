@@ -1,0 +1,15 @@
+{
+  "name": "color-dice-1v1",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Color Dice 1v1 — duel de dés néon dans un style BloxyPet (gemmes, cadres, bannières).",
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./assets/css/app.css --minify",
+    "dev": "tailwindcss -i ./src/input.css -o ./assets/css/app.css --watch",
+    "start": "python3 -m http.server 3000 --bind 0.0.0.0",
+    "check": "node scripts/check.js"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}
