@@ -48,8 +48,8 @@ for (const [, cls] of js.matchAll(/class="([^"$]*?)"/g)) {
 }
 const missing = [];
 dynamicClasses.forEach((cls) => {
-  const base = cls.replace(/^!/, "").split(":").pop();
-  if (!base || base.includes("${")) return;
+  if (cls.includes("${")) return;
+  const base = cls.replace(/^!/, "");
   if (!cssNorm.includes("." + base)) missing.push(cls);
 });
 missing.forEach((c) => problems.push(`classe absente du CSS compilé : ${c}`));
@@ -70,7 +70,7 @@ for (const m of html.matchAll(/<(\/?)([a-zA-Z][\w-]*)([^>]*)>/g)) {
 if (stack.length) problems.push(`balises non fermées : ${stack.join(", ")}`);
 
 // 5. sections clés
-["arena", "tray", "colorGrid", "betChips", "duelBtn", "myDuelCard", "botDuelCard", "historyList", "chatList", "lockerModal", "profileBanner", "profileFrame"]
+["arena", "tray", "colorGrid", "betChips", "duelBtn", "myDuelCard", "botDuelCard", "historyList", "chatList", "lockerModal", "profileFrame", "lobbyList", "viewCreate", "viewHistory"]
   .forEach((id) => { if (!ids.has(id)) problems.push(`section clé manquante : #${id}`); });
 
 // 6. les 6 couleurs sont présentes dans les données du jeu

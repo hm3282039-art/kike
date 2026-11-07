@@ -1,51 +1,49 @@
-# 🎲 Color Dice 1v1 — duel de dés néon (style BloxyPet)
+# 🎲 Color Dice 1v1 — Dice Duels (style BloxyPet)
 
-Mini-jeu web en **HTML + Tailwind CSS + JavaScript vanilla** : design sombre, néons
-violets/bleus, gemmes roses et dorées, cadres et bannières animés façon BloxyPet.
+Mini-jeu web **HTML + Tailwind CSS + JavaScript vanilla**, calqué sur l'interface de
+`bloxypet.com/dice-duels` : thème sombre neutre, accent violet, rail d'icônes à gauche,
+liste de parties, chat à droite.
 
-## Lancer le jeu
+## Lancer
 
 ```bash
-npm start          # → http://localhost:3000  (serveur Python, aucune dépendance)
-# ou n'importe quel serveur statique :
+npm start          # http://localhost:3000 (serveur Python, zéro dépendance)
+# ou
 npx serve .
 python3 -m http.server 3000 --bind 0.0.0.0
 ```
 
-Un double-clic sur `index.html` fonctionne aussi, mais un petit serveur est plus
-fiable (polices, `localStorage`).
+CSS déjà compilé dans `assets/css/app.css`. Après modif des classes :
+`npm install && npm run build` (ou `npm run dev`).
 
-Le CSS Tailwind est **déjà compilé** dans `assets/css/app.css` : rien à builder pour jouer.
-Après une modification des classes Tailwind : `npm install` puis `npm run build` (ou `npm run dev`).
+## Règles
 
-## Règles implémentées
-
-1. **Mise** — tu mises des gemmes (100 / 500 / 1 000 / 5 000 / MAX ou saisie libre,
-   min. 100). Le bot mise automatiquement le même montant **à ±5 %**.
-2. **Choix des dés** — 6 couleurs disponibles, tu en choisis **2** (clic ou touches
-   `1`–`6`). Le bot prend **2 autres couleurs**, les **2 dernières restent neutres**.
-3. **Le tirage 1v1** — **4 dés** de couleurs tournent au centre, puis sont révélés un
-   par un. On compte les dés de tes couleurs contre ceux du bot : le plus haut score
-   gagne. Base **50/50** puisque chaque dé est équiprobable sur 6 couleurs.
-4. **Égalité** — si les deux scores sont identiques, le tirage **se relance
-   automatiquement** (la mise reste engagée, jusqu'à 12 relances de sécurité).
-5. **Pot** — le vainqueur rafle **mise joueur + mise bot** ; en cas de victoire tu es
-   crédité du pot complet (donc de la mise du bot en plus de la tienne).
+1. **Mise** : 100 / 1 000 / 5 000 / 25 000 / MAX ou saisie libre. L'adversaire mise
+   le même montant **à ±5 %**.
+2. **Couleurs** : 6 disponibles, tu en choisis **2** (clic ou touches `1`–`6`),
+   l'adversaire prend **2 autres couleurs**, les **2 restantes sont neutres**.
+3. **Tirage** : **4 dés** tournent au centre puis sont révélés un par un. On compare
+   tes dés à ceux de l'adversaire (50/50 de base, 6 couleurs équiprobables).
+4. **Égalité** : le tirage **se relance automatiquement** (jusqu'à 12 relances de
+   sécurité, puis remboursement).
+5. **Pot** : le vainqueur rafle **mise joueur + mise adversaire**.
 
 ## Interface
 
-- **En-tête** : solde de gemmes animé (+ boutique), avatar, **cadre équipé**, bannière,
-  titre, niveau/XP et statistiques du joueur.
-- **Zone de duel 1v1** : carte joueur **vs** carte bot, avec avatar, cadre, bannière,
-  titre et **mises respectives**.
-- **Grille de 6 couleurs** : tes 2 choix (cyan), les 2 du bot (rose, révélées au lancer),
-  les 2 neutres (grisées).
-- **Arène centrale** : 4 dés 3D qui tournent, s'illuminent à la révélation, compteurs de
-  score en direct, halo coloré, confettis et verdict (victoire / défaite / égalité).
-- **Panlatéral** : dernier duel détaillé, chat de salon (bots qui flexent cadres,
-  bannières et pots) et historique des 14 derniers duels.
-- **Vestiaire** : bannières (10), cadres (7), titres (8) et skins de dés (7),
-  achat en gemmes, aperçu en direct et équipement instantané.
+- **Top nav** : solde de gemmes (+ recharge), bouton Wallet, vestiaire, son, profil
+  (avatar + cadre + bannière + titre).
+- **Rail gauche** : navigation façon BloxyPet (profil, jeux, inventaire, cosmétiques,
+  fair-play, stats, quêtes, classement, paramètres, aide, Discord).
+- **Onglets Create / History** : configuration du duel ou historique + statistiques.
+- **Duel 1v1** : carte joueur **vs** carte adversaire (avatar, cadre, bannière, titre,
+  mises), arène à 4 dés, grille des 6 couleurs, sélection de mise, pot et bouton
+  « Lancer le duel ».
+- **Parties en cours** : liste façon BloxyPet (bannières, cadres, bande de dés, pot,
+  score, pips) avec boutons **Join / View**.
+- **Colonne droite** : encart sponsorisé « Join », duel du jour détaillé, **chat** avec
+  messages des joueurs et envoi de messages.
+- **Vestiaire** : bannières, cadres, titres et skins de dés, achat en gemmes et
+  équipement immédiat.
 
 ## Raccourcis
 
@@ -53,22 +51,21 @@ Après une modification des classes Tailwind : `npm install` puis `npm run build
 | --- | --- |
 | `Espace` | Lancer le duel |
 | `1` … `6` | (Dé)sélectionner une couleur |
-| `B` | Ouvrir le vestiaire |
+| `B` | Vestiaire |
 | `Échap` | Fermer le vestiaire |
 
 ## Structure
 
 ```
-index.html               markup + sprite SVG + arène
-src/input.css            design system Tailwind (thème, composants néon, dés 3D)
-tailwind.config.js       palette, keyframes, animations
-assets/css/app.css       CSS compilé (généré, ne pas éditer)
-assets/js/app.js         règles du jeu, bot, dés 3D, cosmétiques, chat, son, persistance
-scripts/check.js         vérification statique (npm run check)
+index.html          structure (top nav, rail, colonnes, vestiaire)
+src/input.css       design system (thème sombre, composants, dés 3D)
+tailwind.config.js  polices + animations utilitaires
+assets/css/app.css  CSS compilé (généré)
+assets/js/app.js    règles du jeu, adversaires, lobby, chat, cosmétiques, son
+scripts/check.js    vérif statique (npm run check)
 ```
 
-La progression (gemmes, cosmétiques, historique, stats) est sauvegardée dans
-`localStorage` sous la clé `colordice1v1.save.v1`.
+Sauvegarde locale : `localStorage` clé `bloxypet.colordice.save.v1`.
+Hook de test exposé uniquement avec `?debug`.
 
-> Démo : gemmes, bots et classements sont simulés ; aucune transaction réelle.
-> Un hook de test (`window.__cd`) n'est exposé que si l'URL contient `?debug`.
+> Démo : gemmes, adversaires et parties sont simulés, aucune transaction réelle.

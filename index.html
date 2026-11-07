@@ -3,592 +3,654 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#05040c" />
-  <title>Color Dice 1v1 — Duels de dés néon | BloxyPet</title>
-  <meta name="description" content="Color Dice 1v1 : choisis 2 dés parmi 6 couleurs, affronte le bot et rafle le pot. Design néon, gemmes, cadres et bannières façon BloxyPet." />
+  <meta name="theme-color" content="#161618" />
+  <title>Color Dice 1v1 — Dice Duels | BloxyPet</title>
+  <meta name="description" content="Color Dice 1v1 : choisis 2 dés parmi 6 couleurs, affronte un adversaire et rafle le pot." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./assets/css/app.css" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 3h14l3 6-10 12L2 9z' fill='%23ff2fb9'/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 2h14l3.2 6.1L12 22 1.8 8.1z' fill='%238b5cf6'/%3E%3C/svg%3E" />
 </head>
-<body class="relative">
-  <!-- ================= SPRITE D'ICÔNES ================= -->
+<body>
+  <!-- ================= SPRITE ================= -->
   <svg width="0" height="0" class="absolute" aria-hidden="true" focusable="false">
     <defs>
       <linearGradient id="gemGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#ffd1f2" />
-        <stop offset="28%" stop-color="#ff5fc8" />
-        <stop offset="62%" stop-color="#c94dff" />
-        <stop offset="100%" stop-color="#4fc3ff" />
+        <stop offset="0%" stop-color="#a7f3d0" />
+        <stop offset="35%" stop-color="#38bdf8" />
+        <stop offset="100%" stop-color="#2563eb" />
       </linearGradient>
       <linearGradient id="gemGradDeep" x1="0" y1="0" x2="0.6" y2="1">
-        <stop offset="0%" stop-color="#b13cff" />
-        <stop offset="55%" stop-color="#ff2fb9" />
-        <stop offset="100%" stop-color="#6a2bff" />
+        <stop offset="0%" stop-color="#22d3ee" />
+        <stop offset="60%" stop-color="#3b82f6" />
+        <stop offset="100%" stop-color="#1e3a8a" />
       </linearGradient>
       <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#fff6cd" />
-        <stop offset="45%" stop-color="#ffd35c" />
-        <stop offset="100%" stop-color="#e08a06" />
+        <stop offset="0%" stop-color="#fde68a" />
+        <stop offset="50%" stop-color="#fbbf24" />
+        <stop offset="100%" stop-color="#d97706" />
       </linearGradient>
     </defs>
 
     <symbol id="i-gem" viewBox="0 0 24 24">
       <path d="M5 2.6h14l3.2 6.1L12 22.1 1.8 8.7z" fill="url(#gemGrad)" />
       <path d="M5 2.6 7.1 8.7h9.8L19 2.6z" fill="#fff" opacity=".55" />
-      <path d="M1.8 8.7h20.4L12 22.1z" fill="url(#gemGradDeep)" opacity=".7" />
+      <path d="M1.8 8.7h20.4L12 22.1z" fill="url(#gemGradDeep)" opacity=".75" />
       <path d="M7.1 8.7 12 22.1 16.9 8.7z" fill="#fff" opacity=".22" />
-      <path d="M5 2.6h14l3.2 6.1L12 22.1 1.8 8.7z" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1" />
+      <path d="M5 2.6h14l3.2 6.1L12 22.1 1.8 8.7z" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1" />
     </symbol>
 
     <symbol id="i-dice" viewBox="0 0 24 24">
-      <rect x="3" y="3" width="18" height="18" rx="4.5" fill="currentColor" opacity=".16" />
-      <rect x="3" y="3" width="18" height="18" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.9" />
-      <circle cx="8.3" cy="8.3" r="1.55" fill="currentColor" />
-      <circle cx="15.7" cy="8.3" r="1.55" fill="currentColor" />
-      <circle cx="12" cy="12" r="1.55" fill="currentColor" />
-      <circle cx="8.3" cy="15.7" r="1.55" fill="currentColor" />
-      <circle cx="15.7" cy="15.7" r="1.55" fill="currentColor" />
+      <rect x="3" y="3" width="18" height="18" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+      <circle cx="8.3" cy="8.3" r="1.5" fill="currentColor" />
+      <circle cx="15.7" cy="8.3" r="1.5" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+      <circle cx="8.3" cy="15.7" r="1.5" fill="currentColor" />
+      <circle cx="15.7" cy="15.7" r="1.5" fill="currentColor" />
+    </symbol>
+
+    <symbol id="i-gamepad" viewBox="0 0 24 24">
+      <path d="M7.5 8h9a4.5 4.5 0 0 1 4.4 5.4l-.6 3A3 3 0 0 1 15.6 18l-1.4-1.6h-4.4L8.4 18a3 3 0 0 1-5.7-1.6l-.6-3A4.5 4.5 0 0 1 7.5 8z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      <path d="M7.6 11.4v3M6.1 12.9h3M15.6 11.9h.01M17.6 13.9h.01" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-home" viewBox="0 0 24 24">
+      <path d="M4 10.6 12 4l8 6.6V20H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      <path d="M9.6 20v-5.4h4.8V20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+    </symbol>
+
+    <symbol id="i-bag" viewBox="0 0 24 24">
+      <path d="M5 8h14l1 13H4zM8.5 8V6.4a3.5 3.5 0 0 1 7 0V8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+
+    <symbol id="i-trophy" viewBox="0 0 24 24">
+      <path d="M7 3h10v5.5a5 5 0 0 1-10 0zM7 5H4.2v1.6A3.4 3.4 0 0 0 7.6 10M17 5h2.8v1.6A3.4 3.4 0 0 1 16.4 10M12 13.5V17M8.5 21h7M10 17h4l.8 4h-5.6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+
+    <symbol id="i-chat" viewBox="0 0 24 24">
+      <path d="M4 5.5h16v10.2H9.6L5 19.6v-3.9H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+      <path d="M8 9.5h8M8 12.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-users" viewBox="0 0 24 24">
+      <circle cx="9" cy="8.4" r="3.3" fill="none" stroke="currentColor" stroke-width="1.7" />
+      <path d="M2.9 20c.5-3.6 3.1-5.6 6.1-5.6s5.6 2 6.1 5.6M16 5.5a3.1 3.1 0 0 1 0 5.9M17.6 14.9c2.1.5 3.5 2.2 3.8 5.1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-chart" viewBox="0 0 24 24">
+      <path d="M4 20V10M10 20V5M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-quest" viewBox="0 0 24 24">
+      <path d="M5 4h14v17l-7-4-7 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      <path d="M9 9h6M9 12.5h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-gift" viewBox="0 0 24 24">
+      <path d="M4 9.5h16V13H4zM5.5 13h13V21h-13zM12 9.5V21M8.6 9.5a2.3 2.3 0 1 1 0-4.6c1.9 0 3.4 2.2 3.4 4.6M15.4 9.5a2.3 2.3 0 1 0 0-4.6c-1.9 0-3.4 2.2-3.4 4.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+    </symbol>
+
+    <symbol id="i-settings" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.7" />
+      <path d="M12 2.8v3M12 18.2v3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M2.8 12h3M18.2 12h3M4.4 19.6l2.1-2.1M17.5 6.5l2.1-2.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-help" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7" />
+      <path d="M9.4 9.2a2.7 2.7 0 1 1 3.9 2.6c-.8.5-1.3 1-1.3 1.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+      <circle cx="12" cy="17" r="1.1" fill="currentColor" />
+    </symbol>
+
+    <symbol id="i-bell" viewBox="0 0 24 24">
+      <path d="M6 9.5a6 6 0 0 1 12 0c0 4 1.4 5.5 2 6H4c.6-.5 2-2 2-6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      <path d="M10 19a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 2.8 19.4 6v6.2c0 4.4-3 7.3-7.4 9-4.4-1.7-7.4-4.6-7.4-9V6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      <path d="M8.7 11.9 11 14.2l4.3-4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+
+    <symbol id="i-discord" viewBox="0 0 24 24">
+      <path d="M8.2 6.4A13 13 0 0 1 12 5.8a13 13 0 0 1 3.8.6c2.3 1.6 3.6 4.3 3.8 8.2a13 13 0 0 1-3.6 2 9 9 0 0 1-1-1.6 8.6 8.6 0 0 1-6 0 9 9 0 0 1-1 1.6 13 13 0 0 1-3.6-2c.2-3.9 1.5-6.6 3.8-8.2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+      <circle cx="9.6" cy="12.2" r="1.15" fill="currentColor" />
+      <circle cx="14.4" cy="12.2" r="1.15" fill="currentColor" />
+    </symbol>
+
+    <symbol id="i-close" viewBox="0 0 24 24">
+      <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-plus" viewBox="0 0 24 24">
+      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="M4.8 12.6l4.7 4.6L19.2 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="5" y="10" width="14" height="10" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.8" />
+      <path d="M8.4 10V7.8a3.6 3.6 0 0 1 7.2 0V10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-send" viewBox="0 0 24 24">
+      <path d="M3.8 11.4 20.6 4.4l-4.2 15.2-4.6-5.9z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      <path d="M11.8 13.7 20.6 4.4" fill="none" stroke="currentColor" stroke-width="1.7" />
+    </symbol>
+
+    <symbol id="i-sound" viewBox="0 0 24 24">
+      <path d="M4 9.6h3.2L12 5.4v13.2l-4.8-4.2H4z" fill="currentColor" />
+      <path d="M15.4 8.8a4.6 4.6 0 0 1 0 6.4M18.2 6.4a8 8 0 0 1 0 11.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+    </symbol>
+
+    <symbol id="i-muted" viewBox="0 0 24 24">
+      <path d="M4 9.6h3.2L12 5.4v13.2l-4.8-4.2H4z" fill="currentColor" />
+      <path d="M16 9.4l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
     </symbol>
 
     <symbol id="i-crown" viewBox="0 0 24 24">
-      <path d="M3 8l4 3 5-6 5 6 4-3-1.7 10H4.7z" fill="url(#goldGrad)" stroke="#ffe9a8" stroke-width="1" stroke-linejoin="round" />
-      <circle cx="12" cy="14.5" r="1.4" fill="#7a3d00" opacity=".6" />
+      <path d="M3 8l4 3 5-6 5 6 4-3-1.7 10H4.7z" fill="url(#goldGrad)" />
     </symbol>
 
     <symbol id="i-fire" viewBox="0 0 24 24">
       <path d="M13 2c.4 4.2-3.7 5.1-3.7 9.2 0 1.3.6 2 .6 2s-2-1-2-3.4c-1.4 1.6-2.4 3.6-2.4 5.8a6.5 6.5 0 0 0 13 0c0-4.8-3.9-6.4-5.5-13.6z" fill="currentColor" />
     </symbol>
 
-    <symbol id="i-sparkle" viewBox="0 0 24 24">
-      <path d="M12 2.5l2.1 6.2 6.4 2.3-6.4 2.3L12 19.5l-2.1-6.2L3.5 11l6.4-2.3z" fill="currentColor" />
-      <path d="M19 16.5l.9 2.1 2.1.9-2.1.9L19 22.5l-.9-2.1-2.1-.9 2.1-.9z" fill="currentColor" opacity=".7" />
-    </symbol>
-
-    <symbol id="i-chat" viewBox="0 0 24 24">
-      <path d="M4 5.5h16v10.2H9.6L5 19.6v-3.9H4z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M8 9.4h8M8 12.4h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
-    </symbol>
-
-    <symbol id="i-bag" viewBox="0 0 24 24">
-      <path d="M5 8h14l1 12H4z" fill="currentColor" opacity=".16" />
-      <path d="M5 8h14l1 13H4zM8.5 8V6.4a3.5 3.5 0 0 1 7 0V8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
-    </symbol>
-
-    <symbol id="i-close" viewBox="0 0 24 24">
-      <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-    </symbol>
-
-    <symbol id="i-plus" viewBox="0 0 24 24">
-      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
-    </symbol>
-
-    <symbol id="i-check" viewBox="0 0 24 24">
-      <path d="M4.5 12.8l4.8 4.7L19.5 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-    </symbol>
-
-    <symbol id="i-lock" viewBox="0 0 24 24">
-      <rect x="5" y="10" width="14" height="10" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.9" />
-      <path d="M8.4 10V7.8a3.6 3.6 0 0 1 7.2 0V10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
-      <circle cx="12" cy="15" r="1.5" fill="currentColor" />
-    </symbol>
-
-    <symbol id="i-send" viewBox="0 0 24 24">
-      <path d="M3.6 11.2 21 4l-4.6 16.6-4.6-6.4z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" />
-      <path d="M11.8 14.2 21 4" fill="none" stroke="currentColor" stroke-width="1.9" />
-    </symbol>
-
-    <symbol id="i-sound" viewBox="0 0 24 24">
-      <path d="M4 9.6h3.2L12 5.4v13.2l-4.8-4.2H4z" fill="currentColor" />
-      <path d="M15.4 8.8a4.6 4.6 0 0 1 0 6.4M18.2 6.4a8 8 0 0 1 0 11.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-    </symbol>
-
-    <symbol id="i-muted" viewBox="0 0 24 24">
-      <path d="M4 9.6h3.2L12 5.4v13.2l-4.8-4.2H4z" fill="currentColor" />
-      <path d="M16 9.4l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
-    </symbol>
-
-    <symbol id="i-shield" viewBox="0 0 24 24">
-      <path d="M12 2.8 19.5 6v6.2c0 4.4-3 7.3-7.5 9-4.5-1.7-7.5-4.6-7.5-9V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
-      <path d="M8.6 11.8l2.4 2.4 4.4-4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-    </symbol>
-
-    <symbol id="i-bolt" viewBox="0 0 24 24">
-      <path d="M13.4 2 5 13.4h5.2L9 22l8.6-11.6h-5.3z" fill="currentColor" />
-    </symbol>
-
-    <symbol id="i-users" viewBox="0 0 24 24">
-      <circle cx="9" cy="8.4" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" />
-      <path d="M2.8 20c.5-3.6 3.1-5.6 6.2-5.6s5.7 2 6.2 5.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-      <path d="M16 5.4a3.2 3.2 0 0 1 0 6M17.6 14.8c2.2.5 3.6 2.3 3.9 5.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-    </symbol>
-
     <symbol id="i-refresh" viewBox="0 0 24 24">
-      <path d="M20 11.5A8 8 0 0 0 6.2 6.2L4 8.5M4 12.5a8 8 0 0 0 13.8 5.3L20 15.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M4 4.5v4h4M20 19.5v-4h-4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M20 11.5A8 8 0 0 0 6.2 6.2L4 8.5M4 12.5a8 8 0 0 0 13.8 5.3L20 15.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M4 4.5v4h4M20 19.5v-4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
     </symbol>
 
-    <symbol id="i-trophy" viewBox="0 0 24 24">
-      <path d="M7 3h10v5.5a5 5 0 0 1-10 0z" fill="currentColor" opacity=".22" />
-      <path d="M7 3h10v5.5a5 5 0 0 1-10 0zM7 5H4.2v1.6A3.4 3.4 0 0 0 7.6 10M17 5h2.8v1.6A3.4 3.4 0 0 1 16.4 10M12 13.5V17M8.5 21h7M10 17h4l.8 4h-5.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-    </symbol>
-
-    <symbol id="i-info" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.9" />
-      <path d="M12 10.6V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-      <circle cx="12" cy="7.7" r="1.2" fill="currentColor" />
+    <symbol id="i-eye" viewBox="0 0 24 24">
+      <path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      <circle cx="12" cy="12" r="2.8" fill="none" stroke="currentColor" stroke-width="1.7" />
     </symbol>
 
     <symbol id="i-arrow" viewBox="0 0 24 24">
-      <path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     </symbol>
   </svg>
-
-  <div class="bg-scene" aria-hidden="true">
-    <div class="orb" style="width:520px;height:520px;left:-8%;top:-6%;background:#7c3aed;"></div>
-    <div class="orb" style="width:420px;height:420px;right:-6%;top:8%;background:#22e5ee;animation-delay:-8s;opacity:.3;"></div>
-    <div class="orb" style="width:600px;height:600px;left:35%;bottom:-22%;background:#ff2fb9;animation-delay:-14s;opacity:.28;"></div>
-  </div>
 
   <canvas id="confetti" aria-hidden="true"></canvas>
   <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
-  <!-- ================= BARRE SUPÉRIEURE ================= -->
-  <header class="topbar">
-    <div class="mx-auto flex h-16 max-w-[1500px] items-center gap-2 px-3 sm:gap-3 sm:px-5">
-      <div class="flex flex-none items-center gap-2.5">
-        <span class="brand-mark"><svg class="h-6 w-6"><use href="#i-dice" /></svg></span>
-        <span class="flex flex-col leading-none">
-          <span class="brand-word text-[0.98rem] sm:text-[1.12rem]">COLOR DICE</span>
-          <span class="mt-0.5 text-[0.5rem] font-extrabold uppercase tracking-[0.28em] text-violet-300/70">1v1 · BloxyPet</span>
-        </span>
-      </div>
-
-      <span class="badge badge-live ml-1 hidden sm:inline-flex"><span class="dot"></span> Live</span>
-      <span class="badge hidden items-center gap-1 md:inline-flex" style="background:rgba(163,255,18,.1);border-color:rgba(163,255,18,.35);color:#c9ff85">
-        <svg class="h-3 w-3"><use href="#i-users" /></svg> <span id="playersOnline">1 284</span>
+  <!-- ================= TOP NAV ================= -->
+  <header class="topnav">
+    <a href="#" class="flex shrink-0 items-center gap-2" aria-label="BloxyPet Dice Duels">
+      <span class="grid h-9 w-9 place-items-center rounded-lg text-white" style="background:linear-gradient(150deg,#8b5cf6,#6d28d9)">
+        <svg class="h-5 w-5"><use href="#i-gem" /></svg>
       </span>
+      <span class="hidden flex-col leading-none sm:flex">
+        <span class="text-[0.86rem] font-extrabold tracking-tight text-white">BloxyPet</span>
+        <span class="text-[0.55rem] font-bold uppercase tracking-[0.18em] text-[#6f6f79]">Dice Duels</span>
+      </span>
+    </a>
 
-      <div class="ml-auto flex items-center gap-1.5 sm:gap-2.5">
-        <button type="button" id="btnSound" class="icon-btn hidden sm:grid" title="Sons" aria-label="Activer ou couper les sons" aria-pressed="true">
-          <svg class="icon h-[18px] w-[18px]"><use href="#i-sound" id="soundIcon" /></svg>
-        </button>
-
-        <div class="gem-pill" id="gemPill">
-          <svg class="gem" aria-hidden="true"><use href="#i-gem" /></svg>
-          <span class="amount" id="gemBalance" aria-label="Solde de gemmes">50 000</span>
-          <button type="button" id="btnTopUp" class="grid h-6 w-6 place-items-center rounded-full bg-white/15 text-white transition hover:bg-white/30" title="Boutique de gemmes" aria-label="Acheter des gemmes">
-            <svg class="icon h-3 w-3"><use href="#i-plus" /></svg>
-          </button>
-        </div>
-
-        <button type="button" class="btn btn-ghost hidden !px-3 !py-1.5 !text-[0.7rem] sm:inline-flex" data-open-locker="banners">
-          <svg class="icon h-4 w-4"><use href="#i-bag" /></svg> Vestiaire
-        </button>
-
-        <button type="button" class="profile-chip" data-open-locker="frames" title="Mon profil / vestiaire">
-          <span class="frame frame--epic h-9 w-9" id="navFrame" style="padding:2px">
-            <span class="frame-ring"></span>
-            <span class="frame-avatar" data-avatar="NovaBlaze" id="navAvatar" aria-hidden="true"></span>
-          </span>
-          <span class="hidden flex-col items-start leading-tight md:flex">
-            <span class="text-[0.78rem] font-extrabold text-white" id="navName">NovaBlaze</span>
-            <span class="text-[0.58rem] font-bold text-amber-300/90" id="navTitle">Dice Master</span>
-          </span>
+    <div class="mx-auto flex items-center gap-2">
+      <div class="balance-pill">
+        <svg class="gem" aria-hidden="true"><use href="#i-gem" /></svg>
+        <span class="val" id="gemBalance">146 000</span>
+        <button type="button" id="btnTopUp" class="grid h-5 w-5 place-items-center rounded-full bg-[#2f2f36] text-[#c9c9d1] transition hover:bg-[#3a3a42] hover:text-white" title="Recharger" aria-label="Recharger les gemmes">
+          <svg class="h-3 w-3"><use href="#i-plus" /></svg>
         </button>
       </div>
+      <button type="button" class="nav-btn nav-btn-primary" id="walletBtn">
+        <svg class="h-3.5 w-3.5"><use href="#i-gem" /></svg>
+        <span class="hidden sm:inline">Wallet</span>
+      </button>
+      <button type="button" class="nav-icon-btn" data-open-locker="banners" title="Vestiaire" aria-label="Vestiaire">
+        <svg class="h-4 w-4"><use href="#i-bag" /></svg>
+      </button>
+    </div>
+
+    <div class="flex shrink-0 items-center gap-2">
+      <button type="button" class="nav-icon-btn hidden md:grid" id="btnSound" aria-pressed="true" title="Sons">
+        <svg class="h-4 w-4"><use href="#i-sound" id="soundIcon" /></svg>
+      </button>
+      <button type="button" class="user-chip" data-open-locker="frames" title="Mon profil">
+        <span class="frame frame--epic h-8 w-8" id="navFrame">
+          <span class="frame-ring"></span>
+          <span class="frame-avatar" data-avatar="NovaBlaze"></span>
+        </span>
+        <span class="hidden flex-col items-start leading-none sm:flex">
+          <span class="text-[0.7rem] font-extrabold uppercase tracking-wide text-[#c2c2cb]" id="navName">KIR_ASTRAL</span>
+          <span class="text-[0.55rem] font-bold text-[#6f6f79]" id="navTitle">Dice Master</span>
+        </span>
+      </button>
     </div>
   </header>
 
-  <div class="mx-auto max-w-[1500px] px-3 pt-3 sm:px-5">
-    <div class="ticker">
-      <div class="ticker-track" id="tickerTrack"></div>
-    </div>
-  </div>
+  <!-- ================= RAIL ================= -->
+  <nav class="rail" aria-label="Navigation">
+    <button type="button" class="rail-btn is-active" data-open-locker="banners" title="Profil">
+      <svg class="h-[18px] w-[18px]"><use href="#i-dice" /></svg>
+    </button>
+    <span class="rail-label">Home</span>
 
-  <main class="mx-auto w-full max-w-[1500px] space-y-4 px-3 pb-24 pt-4 sm:px-5 xl:pb-8">
+    <button type="button" class="rail-btn mt-2" id="railGames" title="Jeux">
+      <svg class="h-[18px] w-[18px]"><use href="#i-gamepad" /></svg>
+    </button>
+    <span class="rail-label">Games</span>
 
-    <!-- ================= EN-TÊTE / PROFIL ================= -->
-    <section class="panel overflow-hidden" aria-label="Profil du joueur">
-      <div class="relative">
-        <div class="banner banner-nebula h-[124px] sm:h-[142px]" id="profileBanner">
-          <div class="banner-fx"></div>
-          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink-900/95 to-transparent"></div>
-          <div class="absolute left-3 top-3 flex items-center gap-1.5 sm:left-4 sm:top-4">
-            <span class="badge" style="background:rgba(0,0,0,.42);border-color:rgba(255,211,92,.5);color:#ffe9a8">
-              <svg class="h-3 w-3"><use href="#i-crown" /></svg> Saison 4 · Neon Rush
-            </span>
-            <span class="badge hidden sm:inline-flex" style="background:rgba(0,0,0,.4);border-color:rgba(34,229,238,.4);color:#9df3f8">
-              <svg class="h-3 w-3"><use href="#i-bolt" /></svg> Streak <span id="headerStreak">0</span>
-            </span>
-          </div>
-          <div class="absolute right-3 top-3 flex gap-1.5 sm:right-4 sm:top-4">
-            <button type="button" class="btn !bg-black/40 !px-2.5 !py-1 !text-[0.64rem] backdrop-blur hover:!bg-black/60" data-open-locker="banners">
-              <svg class="icon h-3.5 w-3.5"><use href="#i-bag" /></svg> Personnaliser
+    <div class="rail-sep"></div>
+
+    <button type="button" class="rail-btn" data-open-locker="skins" title="Inventaire">
+      <svg class="h-[18px] w-[18px]"><use href="#i-bag" /></svg>
+    </button>
+    <button type="button" class="rail-btn" data-open-locker="banners" title="Cosmétiques">
+      <svg class="h-[18px] w-[18px]"><use href="#i-gift" /></svg>
+    </button>
+    <button type="button" class="rail-btn" data-open-locker="titles" title="Titres">
+      <svg class="h-[18px] w-[18px]"><use href="#i-users" /></svg>
+    </button>
+    <button type="button" class="rail-btn" id="railFair" title="Provably fair">
+      <svg class="h-[18px] w-[18px]"><use href="#i-shield" /></svg>
+    </button>
+
+    <div class="rail-sep"></div>
+
+    <button type="button" class="rail-btn" id="railStats" title="Statistiques">
+      <svg class="h-[18px] w-[18px]"><use href="#i-chart" /></svg>
+    </button>
+    <button type="button" class="rail-btn" id="railQuests" title="Quêtes">
+      <svg class="h-[18px] w-[18px]"><use href="#i-quest" /></svg>
+    </button>
+    <button type="button" class="rail-btn" id="railTrophy" title="Classement">
+      <svg class="h-[18px] w-[18px]"><use href="#i-trophy" /></svg>
+    </button>
+
+    <div class="rail-sep"></div>
+
+    <button type="button" class="rail-btn" id="railSettings" title="Paramètres">
+      <svg class="h-[18px] w-[18px]"><use href="#i-settings" /></svg>
+    </button>
+    <button type="button" class="rail-btn" id="railHelp" title="Aide">
+      <svg class="h-[18px] w-[18px]"><use href="#i-help" /></svg>
+    </button>
+    <a href="#" class="rail-btn mt-auto" title="Discord" aria-label="Discord">
+      <svg class="h-[18px] w-[18px]"><use href="#i-discord" /></svg>
+    </a>
+  </nav>
+
+  <!-- ================= CONTENU ================= -->
+  <div class="pl-[60px] lg:pl-[72px]">
+    <div class="grid grid-cols-1 gap-3 p-3 lg:grid-cols-[minmax(0,1fr)_340px] lg:p-4">
+
+      <!-- ---------- COLONNE JEU ---------- -->
+      <main class="min-w-0 space-y-3">
+        <!-- barre d'actions -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" class="tab is-active" data-view="create">Create</button>
+          <button type="button" class="tab" data-view="history">History</button>
+          <div class="ml-auto flex items-center gap-2">
+            <button type="button" class="btn btn-dark !h-9 !py-0" id="refreshBtn">
+              <svg class="h-3.5 w-3.5"><use href="#i-refresh" /></svg> Refresh
             </button>
-          </div>
-        </div>
-
-        <div class="relative -mt-12 px-3 pb-3.5 sm:-mt-14 sm:px-5 sm:pb-4">
-          <div class="flex flex-wrap items-end gap-3 sm:gap-4">
-            <div class="frame frame--epic h-[84px] w-[84px] sm:h-[96px] sm:w-[96px]" id="profileFrame">
-              <span class="frame-ring"></span>
-              <span class="frame-avatar" data-avatar="NovaBlaze" id="profileAvatar" aria-hidden="true"></span>
-            </div>
-
-            <div class="min-w-0 flex-1">
-              <h1 class="flex flex-wrap items-center gap-x-2 gap-y-1 text-lg font-extrabold leading-tight text-white sm:text-xl">
-                <span id="profileName">NovaBlaze</span>
-                <span class="rounded-md bg-white/10 px-1.5 py-0.5 text-[0.55rem] font-bold uppercase tracking-wider text-violet-200/70">Niv. <span id="levelValue">42</span></span>
-              </h1>
-              <div class="mt-1 flex flex-wrap items-center gap-1.5">
-                <button type="button" class="title-chip title-chip--mythic" id="profileTitle" data-open-locker="titles" title="Changer de titre">
-                  <svg class="h-3 w-3"><use href="#i-sparkle" /></svg>
-                  <span id="profileTitleText">Dice Master</span>
-                </button>
-                <span class="badge" style="background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.14);color:#cfc9e8" id="profileID">#BD-2049</span>
-              </div>
-              <div class="mt-2 max-w-sm">
-                <div class="mb-1 flex items-center justify-between text-[0.56rem] font-bold">
-                  <span class="text-violet-200/70">XP niveau <span id="levelXpLabel">42</span></span>
-                  <span class="tabular-nums text-violet-200/50"><span id="xpNow">34 120</span> / 50 000</span>
-                </div>
-                <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:68%"></div></div>
-              </div>
-            </div>
-
-            <div class="flex w-full items-stretch gap-2 sm:w-auto">
-              <div class="gem-pill !px-3 !py-2">
-                <svg class="gem-lg" aria-hidden="true"><use href="#i-gem" /></svg>
-                <span class="flex flex-col leading-tight">
-                  <span class="text-[0.5rem] font-extrabold uppercase tracking-[0.16em] text-fuchsia-200/60">Gemmes</span>
-                  <span class="amount !text-[1rem]" id="gemBalanceHeader">50 000</span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
-            <div class="stat-tile">
-              <div class="k">Duels joués</div>
-              <div class="v" id="statPlayed">0</div>
-            </div>
-            <div class="stat-tile">
-              <div class="k">Victoires</div>
-              <div class="v" id="statWins">0 <span class="text-[0.6rem] font-bold text-emerald-300" id="statWinrate"></span></div>
-            </div>
-            <div class="stat-tile">
-              <div class="k">Série en cours</div>
-              <div class="v flex items-baseline gap-1" id="statStreak">0 <span class="text-[0.62rem] font-bold text-emerald-300">🔥</span></div>
-            </div>
-            <div class="stat-tile">
-              <div class="k">Meilleur pot</div>
-              <div class="v flex items-center gap-1 text-[0.82rem]" id="statBest">0</div>
+            <div class="hidden items-center gap-1.5 rounded-lg border border-[#2c2c33] bg-[#202024] px-2.5 py-1.5 text-[0.66rem] font-semibold text-[#8b8b95] sm:flex">
+              <svg class="h-3 w-3"><use href="#i-users" /></svg> <span id="playersOnline">1 408</span> en ligne
             </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ================= DUEL + COLONNE ================= -->
-    <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_350px]">
-      <!-- ---------- ZONE DE DUEL ---------- -->
-      <section class="panel overflow-hidden" id="duelZone" aria-label="Zone de duel 1v1">
-        <div class="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-white/[0.07] px-3.5 py-2.5 sm:px-4">
-          <div class="flex items-center gap-2.5">
-            <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white shadow-[0_10px_24px_-12px_rgba(255,47,185,.9)]">
-              <svg class="h-5 w-5"><use href="#i-dice" /></svg>
-            </span>
-            <div>
-              <h2 class="font-display text-[0.94rem] leading-none tracking-wide text-white">DUEL 1v1</h2>
-              <p class="mt-1 text-[0.6rem] font-semibold text-violet-300/70">4 dés · 2 couleurs chacun · le pot au vainqueur</p>
-            </div>
-          </div>
-          <div class="ml-auto flex items-center gap-1.5">
-            <span class="badge badge-live"><span class="dot"></span> Manche <span id="roundNumber">1</span></span>
-            <button type="button" class="badge transition hover:brightness-125" id="fairBtn" style="background:rgba(34,229,238,.08);border-color:rgba(34,229,238,.3);color:#9df3f8" title="Provably fair">
-              <svg class="h-3 w-3"><use href="#i-shield" /></svg> Fair
-            </button>
-          </div>
-        </div>
-
-        <div class="space-y-3 p-3 sm:space-y-4 sm:p-4">
-          <!-- profils 1v1 -->
-          <div class="duel-head">
-            <!-- joueur -->
-            <article class="duel-card is-me" id="myDuelCard">
-              <div class="duel-banner banner banner-nebula" id="duelBannerMe">
-                <div class="banner-fx"></div>
-                <div class="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[#0d0a1c] to-transparent"></div>
-                <span class="absolute left-2 top-1.5 flex items-center gap-1 rounded-full border border-cyan-300/40 bg-black/45 px-1.5 py-0.5 text-[0.5rem] font-black uppercase tracking-wider text-cyan-200 backdrop-blur">Toi</span>
-              </div>
-              <div class="duel-body">
-                <span class="frame frame--epic h-[52px] w-[52px]" id="duelFrameMe" style="padding:2px">
-                  <span class="frame-ring"></span>
-                  <span class="frame-avatar" data-avatar="NovaBlaze" id="duelAvatarMe"></span>
-                </span>
-                <div class="min-w-0 flex-1 pb-0.5">
-                  <p class="duel-name" id="duelNameMe">NovaBlaze</p>
-                  <span class="title-chip !px-1.5 !py-0 !text-[0.52rem] mt-0.5" id="duelTitleMe">🎲 Dice Master</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-1 px-2 pb-2">
-                <div class="bet-plate flex-1">
-                  <svg class="gem-sm"><use href="#i-gem" /></svg>
-                  <div class="min-w-0">
-                    <p class="text-[0.46rem] font-extrabold uppercase tracking-[0.14em] text-cyan-200/60">Ma mise</p>
-                    <p class="bet-value" id="myBetDisplay">500</p>
-                  </div>
-                </div>
-                <span class="grid h-7 w-7 place-items-center rounded-lg border border-cyan-300/30 bg-cyan-400/10 font-display text-[0.7rem] text-cyan-200" id="myScore" aria-label="Dés gagnants">0</span>
-              </div>
-            </article>
-
-            <div class="vs-badge" aria-hidden="true">VS</div>
-
-            <!-- bot -->
-            <article class="duel-card is-bot" id="botDuelCard">
-              <div class="duel-banner banner banner-lava" id="duelBannerBot">
-                <div class="banner-fx"></div>
-                <div class="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[#0d0a1c] to-transparent"></div>
-                <span class="absolute left-2 top-1.5 flex items-center gap-1 rounded-full border border-rose-300/40 bg-black/45 px-1.5 py-0.5 text-[0.5rem] font-black uppercase tracking-wider text-rose-200 backdrop-blur">Bot</span>
-                <div class="absolute right-2 top-1.5 flex items-center gap-1 rounded-full border border-white/15 bg-black/45 px-1.5 py-0.5 text-[0.5rem] font-bold text-white/70 backdrop-blur">
-                  <svg class="h-2.5 w-2.5"><use href="#i-users" /></svg> <span id="botOnline">en ligne</span>
-                </div>
-              </div>
-              <div class="duel-body">
-                <span class="frame frame--hostile h-[52px] w-[52px]" id="duelFrameBot" style="padding:2px">
-                  <span class="frame-ring"></span>
-                  <span class="frame-avatar" data-avatar="bot-aurora" id="duelAvatarBot"></span>
-                </span>
-                <div class="min-w-0 flex-1 pb-0.5">
-                  <p class="duel-name" id="duelNameBot">AuroraBytes</p>
-                  <span class="title-chip title-chip--legendary !px-1.5 !py-0 !text-[0.52rem] mt-0.5" id="duelTitleBot">👑 Apex</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-1 px-2 pb-2">
-                <div class="bet-plate flex-1">
-                  <svg class="gem-sm"><use href="#i-gem" /></svg>
-                  <div class="min-w-0">
-                    <p class="text-[0.46rem] font-extrabold uppercase tracking-[0.14em] text-rose-200/60">Mise du bot</p>
-                    <p class="bet-value" id="botBetDisplay">500</p>
-                  </div>
-                </div>
-                <span class="grid h-7 w-7 place-items-center rounded-lg border border-rose-300/30 bg-rose-400/10 font-display text-[0.7rem] text-rose-200" id="botScore" aria-label="Dés gagnants">0</span>
-              </div>
-            </article>
-          </div>
-
-          <!-- arène -->
-          <div class="arena" id="arena" data-skin="neon">
-            <div class="arena-grid"></div>
-            <div class="arena-halo" id="arenaHalo"></div>
-            <span class="score-float left" id="scoreMine">Toi 0</span>
-            <span class="score-float right" id="scoreBot">Bot 0</span>
-
-            <div class="tray" id="tray">
-              <div class="die-slot is-idle" data-index="0">
-                <div class="die" data-die="0"><div class="die-cube" data-cube="0"></div></div>
-                <span class="die-tag" data-tag="0">?</span>
-              </div>
-              <div class="die-slot is-idle" data-index="1">
-                <div class="die" data-die="1"><div class="die-cube" data-cube="1"></div></div>
-                <span class="die-tag" data-tag="1">?</span>
-              </div>
-              <div class="die-slot is-idle" data-index="2">
-                <div class="die" data-die="2"><div class="die-cube" data-cube="2"></div></div>
-                <span class="die-tag" data-tag="2">?</span>
-              </div>
-              <div class="die-slot is-idle" data-index="3">
-                <div class="die" data-die="3"><div class="die-cube" data-cube="3"></div></div>
-                <span class="die-tag" data-tag="3">?</span>
-              </div>
-            </div>
-
-            <div class="absolute inset-x-0 bottom-2 z-10 flex justify-center pointer-events-none">
-              <p class="rounded-full border border-white/10 bg-black/45 px-3 py-1 text-[0.62rem] font-bold text-violet-200/80 backdrop-blur" id="arenaStatus">
-                Choisis 2 couleurs, puis lance le duel 🎲
-              </p>
-            </div>
-
-            <div id="verdictHost" class="pointer-events-none absolute inset-0 z-30" aria-live="assertive"></div>
-            <div id="sparkHost" class="pointer-events-none absolute inset-0 z-20 overflow-hidden"></div>
-          </div>
-
-          <!-- grille des 6 couleurs -->
-          <div>
-            <div class="mb-2 flex flex-wrap items-center justify-between gap-1.5">
-              <h3 class="section-label"><svg class="h-3.5 w-3.5"><use href="#i-dice" /></svg> Tes 2 couleurs <span class="normal-case tracking-normal text-violet-300/50" id="pickCount">(0/2)</span></h3>
-              <div class="flex items-center gap-2 text-[0.56rem] font-bold">
-                <span class="flex items-center gap-1 text-cyan-200/80"><span class="h-2 w-2 rounded-sm bg-cyan-300"></span> Toi</span>
-                <span class="flex items-center gap-1 text-rose-200/80"><span class="h-2 w-2 rounded-sm bg-rose-400"></span> Bot</span>
-                <span class="flex items-center gap-1 text-white/40"><span class="h-2 w-2 rounded-sm bg-white/30"></span> Neutre</span>
-              </div>
-            </div>
-            <div class="color-grid" id="colorGrid" role="group" aria-label="Choisis 2 couleurs de dés"></div>
-          </div>
-
-          <!-- mise -->
-          <div>
-            <div class="mb-2 flex flex-wrap items-center justify-between gap-1.5">
-              <h3 class="section-label"><svg class="h-3.5 w-3.5"><use href="#i-gem" /></svg> Ta mise</h3>
-              <span class="text-[0.56rem] font-semibold text-violet-300/50">Min. 100 · le bot mise presque pareil (±5 %)</span>
-            </div>
-            <div class="flex flex-wrap items-center gap-1.5" id="betChips">
-              <button type="button" class="bet-chip" data-bet="100">100</button>
-              <button type="button" class="bet-chip is-active" data-bet="500">500</button>
-              <button type="button" class="bet-chip" data-bet="1000">1 000</button>
-              <button type="button" class="bet-chip" data-bet="5000">5 000</button>
-              <button type="button" class="bet-chip" data-bet="max">MAX</button>
-              <div class="bet-input-wrap ml-auto">
-                <svg class="gem-sm"><use href="#i-gem" /></svg>
-                <input id="customBet" class="bet-input" type="number" inputmode="numeric" min="100" step="100" value="500" aria-label="Mise personnalisée" />
-              </div>
-            </div>
-          </div>
-
-          <!-- pot & lancer -->
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <div class="flex flex-1 items-center gap-2 rounded-2xl border border-amber-300/25 bg-gradient-to-r from-amber-300/10 via-fuchsia-500/10 to-violet-600/10 px-2.5 py-2">
-              <span class="grid h-8 w-8 flex-none place-items-center rounded-xl bg-gradient-to-br from-amber-200 to-amber-500 text-amber-950 shadow-[0_8px_20px_-10px_rgba(255,196,70,.95)]">
-                <svg class="h-4 w-4"><use href="#i-trophy" /></svg>
+        <!-- ============ CREATE : configuration du duel ============ -->
+        <section id="viewCreate" class="space-y-3">
+          <!-- profil / stats -->
+          <div class="card">
+            <div class="flex flex-wrap items-center gap-3 p-3">
+              <span class="frame frame--epic h-14 w-14" id="profileFrame">
+                <span class="frame-ring"></span>
+                <span class="frame-avatar" data-avatar="NovaBlaze" id="profileAvatar"></span>
               </span>
               <div class="min-w-0 flex-1">
-                <p class="text-[0.5rem] font-extrabold uppercase tracking-[0.15em] text-amber-200/70">Pot total</p>
-                <p class="flex items-center gap-1 font-display text-[0.95rem] text-white"><svg class="gem-sm"><use href="#i-gem" /></svg><span id="potValue">1 000</span></p>
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <h1 class="text-[0.92rem] font-extrabold leading-none text-white" id="profileName">KIR_ASTRAL</h1>
+                  <span class="badge badge-soft">Niv. <span id="levelValue">42</span></span>
+                </div>
+                <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+                  <span class="title-chip" id="profileTitle"><span id="profileTitleText">Dice Master</span></span>
+                  <button type="button" class="text-[0.6rem] font-bold text-[#8b8b95] transition hover:text-white" data-open-locker="banners">Changer le look →</button>
+                </div>
               </div>
-              <span class="hidden text-right text-[0.52rem] font-bold text-violet-200/45 sm:block">Toi + bot<br />50 / 50</span>
+              <div class="flex items-center gap-1.5">
+                <div class="stat-box">
+                  <p class="k">Duels</p>
+                  <p class="v" id="statPlayed">0</p>
+                </div>
+                <div class="stat-box">
+                  <p class="k">Winrate</p>
+                  <p class="v" id="statWinrate">—</p>
+                </div>
+                <div class="stat-box">
+                  <p class="k">Série</p>
+                  <p class="v flex items-center gap-1" id="statStreak">0</p>
+                </div>
+                <div class="stat-box hidden sm:block">
+                  <p class="k">Meilleur pot</p>
+                  <p class="v flex items-center gap-1" id="statBest">0</p>
+                </div>
+              </div>
             </div>
-            <div class="sm:w-[58%]">
-              <button type="button" id="duelBtn" class="btn-duel">
-                <span id="duelLabel">Lancer le duel</span>
+          </div>
+
+          <!-- arène + duel en cours -->
+          <div class="card overflow-hidden">
+            <div class="flex flex-wrap items-center gap-2 border-b border-[#26262b] px-3 py-2.5">
+              <span class="grid h-7 w-7 place-items-center rounded-lg bg-[#8b5cf6] text-white">
+                <svg class="h-4 w-4"><use href="#i-dice" /></svg>
+              </span>
+              <h2 class="card-title">Color Dice 1v1</h2>
+              <span class="badge badge-live"><span class="dot"></span> Manche <span id="roundNumber">1</span></span>
+              <span class="badge badge-soft hidden sm:inline-flex">4 dés · 2 couleurs / joueur</span>
+              <button type="button" class="ml-auto text-[0.62rem] font-bold text-[#8b8b95] transition hover:text-white" id="fairBtn">
+                <span class="inline-flex items-center gap-1"><svg class="h-3 w-3"><use href="#i-shield" /></svg> Provably fair</span>
               </button>
             </div>
+
+            <!-- joueur vs bot -->
+            <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-3 pt-3">
+              <div class="duel-card is-me" id="myDuelCard">
+                <div class="flex items-center gap-2">
+                  <span class="mini-banner banner banner-nebula" id="myMiniBanner">
+                    <span class="absolute inset-0 grid place-items-center">
+                      <span class="frame frame--epic h-8 w-8" id="duelFrameMe">
+                        <span class="frame-ring"></span>
+                        <span class="frame-avatar" data-avatar="NovaBlaze" id="duelAvatarMe"></span>
+                      </span>
+                    </span>
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <p class="duel-name" id="duelNameMe">KIR_ASTRAL</p>
+                    <p class="duel-sub">Toi · <span id="duelTitleMe">Dice Master</span></p>
+                  </div>
+                  <span class="score-badge bg-[#0e3a4d] text-[#7dd3fc]" id="myScore">0</span>
+                </div>
+                <div class="bet-row">
+                  <svg class="gem-sm"><use href="#i-gem" /></svg>
+                  <span class="bet-val" id="myBetDisplay">1 000</span>
+                  <span class="ml-auto text-[0.52rem] font-bold uppercase tracking-wide text-[#6f6f79]">Ma mise</span>
+                </div>
+              </div>
+
+              <span class="vs-pill">VS</span>
+
+              <div class="duel-card is-bot" id="botDuelCard">
+                <div class="flex items-center gap-2">
+                  <span class="mini-banner banner banner-lava" id="botMiniBanner">
+                    <span class="absolute inset-0 grid place-items-center">
+                      <span class="frame frame--hostile h-8 w-8" id="duelFrameBot">
+                        <span class="frame-ring"></span>
+                        <span class="frame-avatar" data-avatar="bot-aurora" id="duelAvatarBot"></span>
+                      </span>
+                    </span>
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <p class="duel-name" id="duelNameBot">AuroraBytes</p>
+                    <p class="duel-sub"><span id="botOnline">en ligne</span> · <span id="duelTitleBot">Légende</span></p>
+                  </div>
+                  <span class="score-badge bg-[#4a1d3b] text-[#f9a8d4]" id="botScore">0</span>
+                </div>
+                <div class="bet-row">
+                  <svg class="gem-sm"><use href="#i-gem" /></svg>
+                  <span class="bet-val" id="botBetDisplay">1 000</span>
+                  <span class="ml-auto text-[0.52rem] font-bold uppercase tracking-wide text-[#6f6f79]">Mise bot</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- arène -->
+            <div class="arena mx-3 mt-3" id="arena" data-skin="neon">
+              <div class="flex items-center justify-between px-3 pt-2.5">
+                <span class="inline-flex items-center gap-1.5 text-[0.62rem] font-bold text-[#7dd3fc]">
+                  <span class="h-2 w-2 rounded-sm bg-[#38bdf8]"></span> Toi · <span id="scoreMine">0</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-[0.62rem] font-bold text-[#6f6f79]" id="arenaStatus">Choisis 2 couleurs et lance le duel</span>
+                <span class="inline-flex items-center gap-1.5 text-[0.62rem] font-bold text-[#f9a8d4]">
+                  Bot · <span id="scoreBot">0</span> <span class="h-2 w-2 rounded-sm bg-[#f472b6]"></span>
+                </span>
+              </div>
+
+              <div class="tray" id="tray">
+                <div class="die-slot is-idle" data-index="0">
+                  <div class="die" data-die="0"><div class="die-cube" data-cube="0"></div></div>
+                  <span class="die-tag" data-tag="0">?</span>
+                </div>
+                <div class="die-slot is-idle" data-index="1">
+                  <div class="die" data-die="1"><div class="die-cube" data-cube="1"></div></div>
+                  <span class="die-tag" data-tag="1">?</span>
+                </div>
+                <div class="die-slot is-idle" data-index="2">
+                  <div class="die" data-die="2"><div class="die-cube" data-cube="2"></div></div>
+                  <span class="die-tag" data-tag="2">?</span>
+                </div>
+                <div class="die-slot is-idle" data-index="3">
+                  <div class="die" data-die="3"><div class="die-cube" data-cube="3"></div></div>
+                  <span class="die-tag" data-tag="3">?</span>
+                </div>
+              </div>
+
+              <div id="verdictHost" class="pointer-events-none absolute inset-0 z-30" aria-live="assertive"></div>
+              <div id="sparkHost" class="pointer-events-none absolute inset-0 z-20 overflow-hidden"></div>
+            </div>
+
+            <!-- couleurs -->
+            <div class="px-3 pt-3">
+              <div class="mb-2 flex items-center justify-between">
+                <h3 class="text-[0.68rem] font-extrabold uppercase tracking-wider text-[#8b8b95]">Tes 2 couleurs <span class="text-[#6f6f79]" id="pickCount">(2/2)</span></h3>
+                <div class="flex items-center gap-2.5 text-[0.56rem] font-bold text-[#6f6f79]">
+                  <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-[#38bdf8]"></span> Toi</span>
+                  <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-[#f472b6]"></span> Bot</span>
+                  <span class="flex items-center gap-1"><span class="h-2 w-2 rounded-sm bg-[#4d4d56]"></span> Neutre</span>
+                </div>
+              </div>
+              <div class="color-grid" id="colorGrid" role="group" aria-label="Choisis 2 couleurs"></div>
+            </div>
+
+            <!-- mise -->
+            <div class="px-3 pt-3">
+              <div class="mb-2 flex items-center justify-between">
+                <h3 class="text-[0.68rem] font-extrabold uppercase tracking-wider text-[#8b8b95]">Mise en gemmes</h3>
+                <span class="text-[0.56rem] font-semibold text-[#6f6f79]">Le bot mise le même montant ±5 %</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5" id="betChips">
+                <button type="button" class="bet-chip" data-bet="100">100</button>
+                <button type="button" class="bet-chip" data-bet="1000">1 000</button>
+                <button type="button" class="bet-chip" data-bet="5000">5 000</button>
+                <button type="button" class="bet-chip" data-bet="25000">25 000</button>
+                <button type="button" class="bet-chip" data-bet="max">MAX</button>
+                <div class="ml-auto flex items-center gap-1.5 rounded-lg border border-[#2c2c33] bg-[#191919] px-2.5">
+                  <svg class="gem-sm"><use href="#i-gem" /></svg>
+                  <input id="customBet" class="input-dark !h-8 !border-0 !bg-transparent !px-0 !text-right" style="width:5.5rem" type="number" min="100" step="100" value="1000" aria-label="Mise personnalisée" />
+                </div>
+              </div>
+            </div>
+
+            <!-- pot + lancer -->
+            <div class="flex flex-wrap items-center gap-2 px-3 py-3">
+              <div class="flex flex-1 items-center gap-2 rounded-lg border border-[#2c2c33] bg-[#1d1d21] px-2.5 py-2">
+                <span class="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-[#2b2b32] text-[#fbbf24]">
+                  <svg class="h-3.5 w-3.5"><use href="#i-trophy" /></svg>
+                </span>
+                <div class="min-w-0">
+                  <p class="text-[0.5rem] font-extrabold uppercase tracking-wider text-[#6f6f79]">Pot total</p>
+                  <p class="flex items-center gap-1 text-[0.78rem] font-extrabold text-white"><svg class="gem-sm"><use href="#i-gem" /></svg><span id="potValue">2 000</span></p>
+                </div>
+                <span class="ml-auto hidden text-right text-[0.54rem] font-semibold leading-tight text-[#5f5f69] sm:block">Le vainqueur<br>rafle tout</span>
+              </div>
+              <div class="w-full sm:w-[46%]">
+                <button type="button" id="duelBtn" class="btn-duel">
+                  <span id="duelLabel">Lancer le duel</span>
+                </button>
+              </div>
+            </div>
           </div>
 
-          <p class="text-center duel-hint">
-            <kbd>Espace</kbd> pour lancer · <kbd>1</kbd>–<kbd>6</kbd> pour choisir une couleur · égalité = nouveau tirage automatique
-          </p>
-        </div>
-      </section>
-
-      <!-- ---------- COLONNE LATÉRALE ---------- -->
-      <aside class="flex flex-col gap-4">
-        <!-- dernier duel -->
-        <section class="panel p-3" aria-label="Dernier duel">
-          <div class="mb-2 flex items-center justify-between">
-            <h2 class="section-label"><svg class="h-3.5 w-3.5"><use href="#i-bolt" /></svg> Dernier duel</h2>
-            <span class="text-[0.55rem] font-bold text-violet-300/45" id="lastRoundLabel">Manche —</span>
+          <!-- file des parties -->
+          <div class="card">
+            <div class="card-head">
+              <h2 class="card-title">Parties en cours</h2>
+              <span class="badge badge-soft" id="lobbyCount">6</span>
+              <span class="ml-auto inline-flex items-center gap-1 text-[0.58rem] font-semibold text-[#6f6f79]">
+                <svg class="h-3 w-3"><use href="#i-eye" /></svg> clique sur Join pour regarder
+              </span>
+            </div>
+            <div class="space-y-1 p-2" id="lobbyList"></div>
           </div>
-          <div id="lastDuel" class="rounded-xl border border-white/[0.07] bg-black/25 p-2.5">
-            <p class="text-[0.68rem] font-semibold text-violet-200/50">Aucun duel joué pour l'instant. Choisis 2 couleurs et lance-toi !</p>
+
+          <div class="ticker">
+            <div class="ticker-track" id="tickerTrack"></div>
           </div>
         </section>
 
-        <!-- salon -->
-        <section class="panel flex flex-col overflow-hidden chat-height" aria-label="Salon de discussion">
-          <div class="flex items-center gap-2 border-b border-white/[0.07] px-3 py-2">
-            <span class="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-cyan-400/30 to-violet-500/30 text-cyan-300 ring-1 ring-cyan-300/25">
-              <svg class="h-3.5 w-3.5"><use href="#i-chat" /></svg>
-            </span>
-            <div class="min-w-0">
-              <h2 class="flex items-center gap-1.5 text-[0.78rem] font-extrabold leading-tight text-white">Salon Néon <span class="online-dot"></span></h2>
-              <p class="text-[0.54rem] font-semibold text-violet-300/60"><span id="chatOnline">842</span> joueurs · flex autorisé</p>
+        <!-- ============ HISTORY ============ -->
+        <section id="viewHistory" class="hidden space-y-3">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="card-title">Historique de mes duels</h2>
+              <span class="badge badge-soft" id="historyCount">0</span>
+              <button type="button" id="clearHistory" class="ml-auto text-[0.62rem] font-bold text-[#8b8b95] transition hover:text-white">Tout effacer</button>
             </div>
-            <button type="button" class="icon-btn ml-auto !h-7 !w-7" data-open-locker="frames" title="Changer mon cadre" aria-label="Changer mon cadre">
-              <svg class="icon h-3.5 w-3.5"><use href="#i-bag" /></svg>
+            <div class="space-y-1.5 p-2" id="historyList"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2 class="card-title">Statistiques</h2></div>
+            <div class="grid grid-cols-2 gap-2 p-2 sm:grid-cols-4">
+              <div class="stat-box"><p class="k">Duels joués</p><p class="v" id="hsPlayed">0</p></div>
+              <div class="stat-box"><p class="k">Victoires</p><p class="v text-[#4ade80]" id="hsWins">0</p></div>
+              <div class="stat-box"><p class="k">Défaites</p><p class="v text-[#f87171]" id="hsLosses">0</p></div>
+              <div class="stat-box"><p class="k">Misé au total</p><p class="v" id="hsWagered">0</p></div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- ---------- COLONNE DROITE ---------- -->
+      <aside class="min-w-0 space-y-3">
+        <!-- featured / join -->
+        <section class="card overflow-hidden">
+          <div class="flex items-center gap-1.5 border-b border-[#26262b] px-3 py-2">
+            <span class="text-[0.6rem] font-bold text-[#6f6f79]">Sponsored by</span>
+            <span class="inline-flex items-center gap-1 text-[0.64rem] font-bold text-white">
+              <svg class="h-3 w-3 text-[#a78bfa]"><use href="#i-gem" /></svg> BloxyPet
+            </span>
+            <span class="ml-auto inline-flex items-center gap-1 text-[0.58rem] font-bold text-[#8b8b95]">
+              <svg class="h-3 w-3"><use href="#i-users" /></svg> 1048
+            </span>
+          </div>
+
+          <div class="p-3">
+            <div class="relative h-24 overflow-hidden rounded-lg banner banner-lava">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent"></div>
+              <div class="absolute bottom-2 left-2 right-2 flex items-end gap-2">
+                <span class="grid h-11 w-11 place-items-center rounded-lg border border-white/20 bg-black/35 text-[0.62rem] font-black text-white backdrop-blur">1v1</span>
+                <div class="min-w-0">
+                  <p class="truncate text-[0.8rem] font-extrabold text-white">Titanic Chili Chinchilla</p>
+                  <p class="flex items-center gap-1 text-[0.58rem] font-bold text-white/70"><svg class="gem-sm"><use href="#i-gem" /></svg> 3,5 Md en jeu</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2 flex items-center justify-between text-[0.56rem] font-semibold text-[#6f6f79]">
+              <span class="inline-flex items-center gap-1"><svg class="h-3 w-3"><use href="#i-users" /></svg> 16 d'hier</span>
+              <span id="featuredPlayers">6/8 joueurs</span>
+            </div>
+
+            <button type="button" class="btn-join mt-2" id="joinFeatured">Join</button>
+          </div>
+        </section>
+
+        <!-- duel du jour / détail -->
+        <section class="card">
+          <div class="card-head">
+            <h2 class="card-title">Duel du jour</h2>
+            <span class="ml-auto text-[0.58rem] font-semibold text-[#6f6f79]" id="lastRoundLabel">—</span>
+          </div>
+          <div class="p-3" id="lastDuel">
+            <p class="rounded-lg border border-dashed border-[#2c2c33] bg-[#1d1d21] px-3 py-4 text-center text-[0.68rem] font-semibold text-[#6f6f79]">
+              Aucun duel joué. Choisis 2 couleurs puis lance le duel 🎲
+            </p>
+          </div>
+        </section>
+
+        <!-- chat -->
+        <section class="card flex flex-col overflow-hidden" style="height:min(520px,calc(100vh - 120px))">
+          <div class="flex items-center gap-2 border-b border-[#26262b] px-3 py-2">
+            <svg class="h-3.5 w-3.5 text-[#8b8b95]"><use href="#i-chat" /></svg>
+            <h2 class="card-title">Chat</h2>
+            <button type="button" class="ml-auto inline-flex items-center gap-1 text-[0.58rem] font-bold text-[#6f6f79] transition hover:text-white" data-open-locker="frames">
+              <svg class="h-3 w-3"><use href="#i-bag" /></svg> cadre
             </button>
           </div>
-          <div class="chat-scroll flex-1 space-y-2.5 overflow-y-auto px-2.5 py-2.5" id="chatList" aria-live="polite"></div>
-          <div class="border-t border-white/[0.07] p-2">
-            <div class="mb-1.5 flex gap-1.5 overflow-x-auto no-scrollbar">
-              <button type="button" class="chat-quick flex-none" data-quick="duel">🎲 Duel ?</button>
-              <button type="button" class="chat-quick flex-none" data-quick="flex">💠 Mon cadre</button>
-              <button type="button" class="chat-quick flex-none" data-quick="pot">💎 Mon pot</button>
-            </div>
-            <form id="chatForm" class="chat-input-wrap" autocomplete="off">
-              <input id="chatInput" class="chat-input" type="text" maxlength="140" placeholder="Dis quelque chose…" aria-label="Votre message" />
-              <button type="submit" class="chat-send" aria-label="Envoyer">
-                <svg class="h-3.5 w-3.5"><use href="#i-send" /></svg>
-              </button>
-            </form>
-          </div>
-        </section>
 
-        <!-- historique -->
-        <section class="panel p-3" aria-label="Historique des duels">
-          <div class="mb-2 flex items-center justify-between">
-            <h2 class="section-label"><svg class="h-3.5 w-3.5"><use href="#i-refresh" /></svg> Historique</h2>
-            <button type="button" id="clearHistory" class="rounded-full border border-white/10 px-1.5 py-0.5 text-[0.52rem] font-bold text-violet-200/55 transition hover:bg-white/10 hover:text-white">Effacer</button>
+          <div class="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-1.5 py-1.5" id="chatList" aria-live="polite"></div>
+
+          <div class="flex items-center gap-2 border-t border-[#26262b] px-2 py-1.5 text-[0.56rem] font-bold text-[#6f6f79]">
+            <span class="inline-flex items-center gap-1 rounded bg-[#232328] px-1.5 py-0.5"><svg class="h-2.5 w-2.5"><use href="#i-users" /></svg> <span id="chatOnline">711</span></span>
+            <button type="button" id="chatPing" class="inline-flex items-center gap-1 rounded bg-[#232328] px-1.5 py-0.5 text-[#a1a1aa] transition hover:text-white">
+              <svg class="h-2.5 w-2.5"><use href="#i-bell" /></svg> Ping
+            </button>
+            <span class="ml-auto inline-flex items-center gap-1 text-[#4ade80]"><span class="h-1.5 w-1.5 rounded-full bg-[#4ade80]"></span> En ligne</span>
           </div>
-          <div class="max-h-[210px] space-y-1.5 overflow-y-auto pr-0.5" id="historyList"></div>
+
+          <form id="chatForm" class="border-t border-[#26262b] p-2" autocomplete="off">
+            <div class="chat-input-wrap">
+              <input id="chatInput" class="chat-input" type="text" maxlength="140" placeholder="Send a Message ..." aria-label="Message" />
+              <button type="submit" class="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-[#8b5cf6] text-white transition hover:bg-[#7c4ded]" aria-label="Envoyer">
+                <svg class="h-3 w-3"><use href="#i-send" /></svg>
+              </button>
+            </div>
+          </form>
         </section>
       </aside>
     </div>
-
-    <footer class="flex flex-col items-center gap-2 py-3 text-center">
-      <div class="hairline w-full max-w-xl"></div>
-      <p class="text-[0.6rem] font-semibold text-violet-300/40">Color Dice 1v1 · démo — gemmes et adversaires simulés, aucune transaction réelle.</p>
-      <p class="flex items-center gap-1.5 text-[0.58rem] font-bold text-violet-300/30">
-        <svg class="h-3 w-3"><use href="#i-sparkle" /></svg> BloxyPet Arena · Saison 4 « Neon Rush »
-      </p>
-    </footer>
-  </main>
+  </div>
 
   <!-- ================= VESTIAIRE ================= -->
   <div class="modal" id="lockerModal" hidden role="dialog" aria-modal="true" aria-labelledby="lockerTitle">
     <div class="modal-backdrop" data-close-locker></div>
     <div class="modal-card">
-      <div class="flex items-center gap-2.5 border-b border-white/[0.08] px-3.5 py-2.5 sm:px-4">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white">
-          <svg class="h-5 w-5"><use href="#i-bag" /></svg>
-        </span>
-        <div>
-          <h2 class="font-display text-[0.9rem] tracking-wide text-white" id="lockerTitle">VESTIAIRE</h2>
-          <p class="text-[0.58rem] font-semibold text-violet-300/60">Équipe tes cosmétiques pour flexer dans le duel</p>
-        </div>
+      <div class="flex items-center gap-2.5 border-b border-[#26262b] px-3 py-2.5">
+        <span class="grid h-7 w-7 place-items-center rounded-lg bg-[#8b5cf6] text-white"><svg class="h-4 w-4"><use href="#i-bag" /></svg></span>
+        <h2 class="card-title" id="lockerTitle">Vestiaire</h2>
         <div class="ml-auto flex items-center gap-2">
-          <div class="gem-pill !py-1">
+          <div class="balance-pill !h-8 !px-2.5">
             <svg class="gem-sm"><use href="#i-gem" /></svg>
-            <span class="amount !text-[0.76rem]" id="lockerGemBalance">50 000</span>
+            <span class="val !text-[0.74rem]" id="lockerGemBalance">146 000</span>
           </div>
-          <button type="button" class="icon-btn" data-close-locker aria-label="Fermer le vestiaire">
-            <svg class="icon h-4 w-4"><use href="#i-close" /></svg>
+          <button type="button" class="nav-icon-btn !h-8 !w-8" data-close-locker aria-label="Fermer">
+            <svg class="h-3.5 w-3.5"><use href="#i-close" /></svg>
           </button>
         </div>
       </div>
 
-      <div class="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">
-        <div class="locker-hero">
-          <div class="hero-banner banner banner-nebula" id="lockerHeroBanner"><div class="banner-fx"></div></div>
-          <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-transparent"></div>
-          <div class="hero-content">
-            <span class="frame frame--epic h-[60px] w-[60px] flex-none" id="lockerHeroFrame">
-              <span class="frame-ring"></span>
-              <span class="frame-avatar" data-avatar="NovaBlaze" id="lockerHeroAvatar"></span>
-            </span>
-            <div class="min-w-0">
-              <p class="text-[0.54rem] font-bold uppercase tracking-[0.18em] text-white/60">Aperçu en direct</p>
-              <p class="truncate text-[0.98rem] font-extrabold text-white" id="lockerHeroName">NovaBlaze</p>
-              <span class="title-chip title-chip--mythic mt-0.5 !py-0 !text-[0.54rem]" id="lockerHeroTitle">🎲 Dice Master</span>
-            </div>
-            <div class="ml-auto hidden text-right sm:block">
-              <p class="text-[0.5rem] font-bold uppercase tracking-[0.16em] text-white/50">Collection</p>
-              <p class="font-display text-base text-amber-300"><span id="lockerOwnedCount">0</span><span class="text-[0.6rem] text-white/40"> / <span id="lockerTotalCount">0</span></span></p>
-            </div>
+      <div class="min-h-0 flex-1 overflow-y-auto p-3">
+        <div class="relative flex items-center gap-2.5 overflow-hidden rounded-lg border border-[#2c2c33] p-2.5">
+          <div class="absolute inset-0 banner banner-nebula opacity-90" id="lockerHeroBanner"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-black/65 to-transparent"></div>
+          <span class="frame frame--epic relative h-12 w-12" id="lockerHeroFrame">
+            <span class="frame-ring"></span>
+            <span class="frame-avatar" data-avatar="NovaBlaze" id="lockerHeroAvatar"></span>
+          </span>
+          <div class="relative min-w-0">
+            <p class="truncate text-[0.82rem] font-extrabold text-white" id="lockerHeroName">KIR_ASTRAL</p>
+            <span class="title-chip" id="lockerHeroTitle">Dice Master</span>
+          </div>
+          <div class="relative ml-auto text-right">
+            <p class="text-[0.5rem] font-bold uppercase tracking-wider text-white/60">Collection</p>
+            <p class="text-[0.78rem] font-extrabold text-white"><span id="lockerOwnedCount">0</span><span class="text-[0.6rem] text-white/50"> / <span id="lockerTotalCount">0</span></span></p>
           </div>
         </div>
 
-        <div class="mt-3 flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-white/[0.08] pb-2" role="tablist" aria-label="Catégories de cosmétiques">
-          <button type="button" class="tab is-active" role="tab" aria-selected="true" data-locker-tab="banners">🖼️ Bannières</button>
-          <button type="button" class="tab" role="tab" aria-selected="false" data-locker-tab="frames">💠 Cadres</button>
-          <button type="button" class="tab" role="tab" aria-selected="false" data-locker-tab="titles">🏷️ Titres</button>
-          <button type="button" class="tab" role="tab" aria-selected="false" data-locker-tab="skins">🎲 Skins de dés</button>
-          <span class="ml-auto hidden shrink-0 pl-2 text-[0.55rem] font-semibold text-violet-300/45 sm:block">Objets verrouillés = gemmes 💎</span>
+        <div class="mt-3 flex items-center gap-1 overflow-x-auto border-b border-[#26262b] pb-2" role="tablist">
+          <button type="button" class="subtab is-active" data-locker-tab="banners">Bannières</button>
+          <button type="button" class="subtab" data-locker-tab="frames">Cadres</button>
+          <button type="button" class="subtab" data-locker-tab="titles">Titres</button>
+          <button type="button" class="subtab" data-locker-tab="skins">Skins de dés</button>
+          <span class="ml-auto hidden shrink-0 text-[0.54rem] font-semibold text-[#5f5f69] sm:block">Les objets verrouillés s'achètent en gemmes</span>
         </div>
 
-        <div class="cosmetic-grid mt-3" id="lockerGrid"></div>
+        <div class="cosmetic-grid mt-2.5" id="lockerGrid"></div>
       </div>
     </div>
   </div>
@@ -596,7 +658,7 @@
   <div class="sr-only" aria-live="polite" id="liveRegion"></div>
 
   <noscript>
-    <div style="position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#05040c;padding:2rem;text-align:center;color:#e9e4ff;font-family:Outfit,sans-serif">
+    <div style="position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#161618;padding:2rem;text-align:center;color:#e9e9ee;font-family:Outfit,sans-serif">
       <p>Color Dice 1v1 a besoin de JavaScript pour lancer les dés 🎲<br />Active-le puis recharge la page.</p>
     </div>
   </noscript>
