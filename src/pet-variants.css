@@ -1,0 +1,56 @@
+/* Authentic PS99 pet tiers, variant finishes and gem artwork. */
+.ps99-gem-icon { display: inline-block; flex-shrink: 0; object-fit: contain; vertical-align: middle; filter: drop-shadow(0 2px 3px rgba(0,0,0,.32)); }
+.roll-dice-button .ps99-gem-icon { filter: brightness(1.35) saturate(.85) drop-shadow(0 0 4px rgba(157,226,255,.5)); }
+
+.open-match-row { min-height: 96px; }
+.join-duel-button.selected { width: 61px; gap: 3px; font-size: 8px; }
+.match-pets { padding-bottom: 13px; }
+.match-pets > .pet-thumbnail { position: relative; z-index: 1; display: inline-block; width: 41px; height: 41px; flex: 0 0 41px; margin-left: -6px; padding: 0; color: #d8eaff; border: 2px solid #385775; border-radius: 9px; outline: none; background: #142235; box-shadow: 0 3px 8px rgba(0,0,0,.24); transition: transform .16s, filter .16s, box-shadow .16s; }
+.match-pets > .pet-thumbnail:first-child { margin-left: 0; }
+.match-pets > .pet-thumbnail:hover, .match-pets > .pet-thumbnail:focus-visible { z-index: 40; transform: translateY(-3px) scale(1.08); filter: brightness(1.08); }
+.match-pets .pet-thumbnail > img { display: block; width: 100%; height: 100%; margin: 0; object-fit: cover; border: 0; border-radius: 6px; background: #17263a; }
+.match-pets .pet-thumbnail .pet-tier-tag { position: absolute; z-index: 3; top: -6px; left: 50%; padding: 2px 4px; transform: translateX(-50%); color: #dff1ff; border: 1px solid #4d7ea9; border-radius: 3px; background: #183a5b; box-shadow: 0 2px 4px rgba(0,0,0,.3); font-size: 4.8px; font-weight: 800; line-height: 1; letter-spacing: .3px; white-space: nowrap; pointer-events: none; }
+.match-pets .pet-thumbnail.tier-titanic .pet-tier-tag { color: #eee5ff; border-color: #8064b8; background: #44346d; }
+.match-pets .pet-thumbnail.tier-gargantuan .pet-tier-tag { color: #fff0d0; border-color: #ac7735; background: #67421c; }
+.match-pets .pet-thumbnail .pet-variant-tag { position: absolute; z-index: 3; left: 50%; bottom: -6px; min-width: 29px; padding: 2px 3px; transform: translateX(-50%); color: #e8f2ff; border: 1px solid #62788f; border-radius: 3px; background: #23394f; box-shadow: 0 2px 4px rgba(0,0,0,.3); font-size: 4.4px; font-weight: 800; line-height: 1; letter-spacing: .1px; text-align: center; white-space: nowrap; pointer-events: none; }
+.match-pets .pet-thumbnail.variant-golden, .match-pets .pet-thumbnail.variant-golden-shiny { border-color: #f4c54d; box-shadow: 0 0 9px rgba(244,197,77,.24), 0 3px 8px rgba(0,0,0,.28); }
+.match-pets .pet-thumbnail.variant-golden .pet-variant-tag, .match-pets .pet-thumbnail.variant-golden-shiny .pet-variant-tag { color: #3a2900; border-color: #ffe184; background: linear-gradient(180deg, #ffe477, #dcae35); }
+.match-pets .pet-thumbnail.variant-shiny { border-color: #d6eaff; box-shadow: 0 0 10px rgba(188,222,255,.25), 0 3px 8px rgba(0,0,0,.28); }
+.match-pets .pet-thumbnail.variant-shiny .pet-variant-tag { color: #17283b; border-color: white; background: linear-gradient(180deg, #f5fbff, #a9c3d9); }
+.match-pets .pet-thumbnail.variant-rainbow, .match-pets .pet-thumbnail.variant-rainbow-shiny { border-color: transparent; background: linear-gradient(#142235,#142235) padding-box, conic-gradient(from 35deg, #ff708b, #ffd65e, #67e69c, #65c8ff, #b682f4, #ff708b) border-box; box-shadow: 0 0 10px rgba(122,169,255,.2), 0 3px 8px rgba(0,0,0,.28); }
+.match-pets .pet-thumbnail.variant-rainbow .pet-variant-tag, .match-pets .pet-thumbnail.variant-rainbow-shiny .pet-variant-tag { color: white; border-color: rgba(255,255,255,.6); background: linear-gradient(100deg, #bb5278, #9c76bb 45%, #3b8ca5 75%, #4b9b6b); text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.match-pets .pet-thumbnail.variant-golden-shiny::after, .match-pets .pet-thumbnail.variant-rainbow-shiny::after { content: '✦'; position: absolute; z-index: 4; top: 1px; right: 2px; color: white; font-size: 9px; line-height: 1; text-shadow: 0 0 4px #81caff, 0 1px 2px #152235; pointer-events: none; }
+.match-pets .pet-thumbnail .pet-tooltip { position: absolute; z-index: 100; left: 50%; bottom: calc(100% + 12px); width: 166px; padding: 9px 10px; transform: translate(-50%,5px); opacity: 0; visibility: hidden; color: #dbeaff; border: 1px solid #3b5d80; border-radius: 8px; background: rgba(8,20,33,.98); box-shadow: 0 10px 28px rgba(0,0,0,.42); text-align: left; pointer-events: none; transition: opacity .15s, transform .15s, visibility .15s; }
+.match-pets .pet-thumbnail:hover .pet-tooltip, .match-pets .pet-thumbnail:focus-visible .pet-tooltip { opacity: 1; visibility: visible; transform: translate(-50%,0); }
+.match-pets .pet-thumbnail .pet-tooltip::after { content: ''; position: absolute; left: 50%; bottom: -5px; width: 8px; height: 8px; transform: translateX(-50%) rotate(45deg); border-right: 1px solid #3b5d80; border-bottom: 1px solid #3b5d80; background: #0a1929; }
+.match-pets .pet-thumbnail .pet-tooltip strong { display: block; color: #e8f3ff; font-size: 9px; font-weight: 650; line-height: 1.35; }
+.match-pets .pet-thumbnail .pet-tooltip small { position: static; display: block; margin-top: 4px; color: #8eb6db; font-size: 7px; line-height: 1.2; white-space: normal; }
+.match-pets > .match-pet-count { margin-left: 8px; color: #7894af; font-size: 7px; white-space: nowrap; }
+.match-pets > .match-pet-level { max-width: 100%; overflow: hidden; color: #6e8ba7; font-size: 6.2px; text-overflow: ellipsis; }
+.match-avatar.tier-huge, .arena-avatar.tier-huge { border-color: #3c82c5; }
+.match-avatar.tier-titanic, .arena-avatar.tier-titanic { border-color: #8568bd; }
+.match-avatar.tier-gargantuan, .arena-avatar.tier-gargantuan { border-color: #b17a38; box-shadow: 0 0 10px rgba(198,139,58,.16); }
+
+@media (max-width: 1120px) {
+  .match-pets > .pet-thumbnail { width: 37px; height: 37px; flex-basis: 37px; }
+  .match-pets > .match-pet-count { display: none; }
+}
+
+@media (max-width: 900px) {
+  .match-pets > .match-pet-count { display: inline; }
+}
+
+@media (max-width: 680px) {
+  .open-match-row { min-height: 105px; }
+  .match-pets { padding-bottom: 0; }
+  .match-pets > .pet-thumbnail { width: 41px; height: 41px; flex-basis: 41px; }
+  .match-pets > .match-pet-count { font-size: 6.5px; }
+  .match-pets > .match-pet-level { left: auto; right: 0; bottom: 10px; max-width: 125px; font-size: 6px; }
+  .match-pets .pet-thumbnail .pet-tooltip { display: none; }
+  .stat-icon .ps99-gem-icon { width: 17px; height: 17px; }
+}
+
+@media (max-width: 380px) {
+  .match-pets > .match-pet-count { display: none; }
+  .match-pets > .match-pet-level { max-width: 105px; }
+}
