@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { ArrowDownUp, ArrowRight, BookOpen, Bot, Check, Crown, Dices, HelpCircle, History, MessageCircle, Plus, Radio, ShieldCheck, ShieldX, Sparkles, Swords, Trophy, Users, X, Zap } from 'lucide-react'
 import { GemIcon, PawLogo } from './components/GameArt'
 import { appRoute, assetUrl } from './lib/appUrl'
@@ -9,6 +10,10 @@ type PetTier = 'Huge' | 'Titanic' | 'Gargantuan'
 type PetVariant = 'Normal' | 'Golden' | 'Rainbow' | 'Shiny' | 'Golden Shiny' | 'Rainbow Shiny'
 type MatchStatus = 'waiting' | 'rolling'
 type ActivityKind = 'create' | 'roll' | 'result' | 'chat'
+
+type LobbyViewTransition = {
+  finished: Promise<void>
+}
 
 type HistoryEntry = {
   id: number
@@ -22,6 +27,7 @@ type HistoryEntry = {
   sideValue?: number
   potValue?: number
   petCount?: number
+  pets?: PetId[]
   time: string
   rollId: string
 }
@@ -140,6 +146,7 @@ const PIP_MAP: Record<number, number[]> = {
 }
 const SHORT_VARIANTS: Record<PetVariant, string> = { Normal: '', Golden: 'GOLD', Rainbow: 'RAINBOW', Shiny: 'SHINY', 'Golden Shiny': 'GOLD ✦', 'Rainbow Shiny': 'RAIN ✦' }
 const compact = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 })
+const fullNumber = new Intl.NumberFormat('en-US')
 const formatCompact = (value: number) => compact.format(value)
 const CONFETTI_COLORS = ['#ffd76a', '#63dea5', '#6fb5ff', '#f38aa1', '#b994ff']
 const timeNow = () => new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
@@ -182,11 +189,11 @@ function PetThumbnail({ petId }: { petId: PetId }) {
   const pet = PET_CATALOG[petId]
   const variantClass = pet.variant.toLowerCase().replaceAll(' ', '-')
   return (
-    <span className={`pet-thumbnail tier-${pet.tier.toLowerCase()} variant-${variantClass}`} tabIndex={0} aria-label={`${pet.variant} ${pet.name}, RAP ${formatCompact(pet.rap)}`}>
+    <span className={`pet-thumbnail tier-${pet.tier.toLowerCase()} variant-${variantClass}`} tabIndex={0} aria-label={`${pet.variant} ${pet.name}, exact RAP ${fullNumber.format(pet.rap)} Diamonds`}>
       <img src={assetUrl(`images/pets/${petId}.png`)} alt="" draggable={false} />
       <span className="pet-tier-tag">{pet.tier === 'Gargantuan' ? 'GARG' : pet.tier === 'Titanic' ? 'TITA' : 'HUGE'}</span>
       {pet.variant !== 'Normal' && <span className="pet-variant-tag">{SHORT_VARIANTS[pet.variant]}</span>}
-      <span className="pet-tooltip" aria-hidden="true"><strong>{pet.name}</strong><small>{pet.tier} · {pet.variant}</small><small>RAP {formatCompact(pet.rap)} Diamonds</small></span>
+      <span className="pet-tooltip" aria-hidden="true"><strong>{pet.name}</strong><small>{pet.tier} · {pet.variant}</small><small>RAP {formatCompact(pet.rap)} Diamonds</small><small className="pet-tooltip-full">Exact RAP · {fullNumber.format(pet.rap)} Diamonds</small></span>
     </span>
   )
 }
@@ -200,14 +207,18 @@ function ColorDie({ color, value, index, rolling, playerColors, botColors }: {
   botColors: DiceColor[]
 }) {
   const definition = COLORS.find((item) => item.id === color)!
+  const playerPoint = !rolling && botColors.length > 0 && playerColors.includes(color)
+  const botPoint = !rolling && botColors.length > 0 && botColors.includes(color)
+  const landed = !rolling && botColors.length > 0
+  const scoreClass = playerPoint && botPoint ? 'scores-both' : playerPoint ? 'scores-player' : botPoint ? 'scores-bot' : ''
   return (
-    <div className={`die-result die-result-${index} ${rolling ? 'rolling' : ''}`}>
-      <div className={`color-die color-die-${color}`} style={{ '--die-color': definition.hex, '--die-dark': definition.dark } as React.CSSProperties}>
+    <div className={`die-result die-result-${index} ${rolling ? 'rolling' : ''} ${landed ? 'landed' : ''} ${scoreClass}`}>
+      <div className={`color-die color-die-${color}`} role="img" aria-label={`${definition.label} die showing ${value}${playerPoint ? ', one point for you' : ''}${botPoint ? ', one point for the bot' : ''}`} style={{ '--die-color': definition.hex, '--die-dark': definition.dark } as React.CSSProperties}>
         <div className="die-pips">{Array.from({ length: 9 }, (_, pip) => <span key={pip} className={PIP_MAP[value].includes(pip) ? 'visible' : ''} />)}</div>
         <span className="die-shine" />
       </div>
       <span className="die-color-name">{definition.label}</span>
-      {!rolling && botColors.length > 0 && <div className="die-owner-tags">{playerColors.includes(color) && <span className="owner-you">YOU +1</span>}{botColors.includes(color) && <span className="owner-bot">BOT +1</span>}</div>}
+      {!rolling && botColors.length > 0 && <div className="die-owner-tags">{playerPoint && <span className="owner-you">YOU +1</span>}{botPoint && <span className="owner-bot">BOT +1</span>}</div>}
     </div>
   )
 }
@@ -277,9 +288,23 @@ export default function App() {
   const rollTimeoutsRef = useRef<number[]>([])
   const revealedRef = useRef(0)
   const resultContinueRef = useRef<HTMLButtonElement>(null)
+  const viewTransitionsEnabledRef = useRef(true)
+  const activeViewTransitionRef = useRef<LobbyViewTransition | null>(null)
+  viewTransitionsEnabledRef.current = activeTab === 'open' && !duelModalOpen && !infoModal && !showResultOverlay
 
   const commitMatches = (next: OpenMatch[]) => {
     matchesRef.current = next
+    const viewDocument = document as Document & { startViewTransition?: (callback: () => void) => LobbyViewTransition }
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (viewDocument.startViewTransition && !reduceMotion && viewTransitionsEnabledRef.current && !activeViewTransitionRef.current) {
+      const transition = viewDocument.startViewTransition(() => { flushSync(() => setMatches(next)) })
+      activeViewTransitionRef.current = transition
+      const releaseTransition = () => {
+        if (activeViewTransitionRef.current === transition) activeViewTransitionRef.current = null
+      }
+      void transition.finished.then(releaseTransition, releaseTransition)
+      return
+    }
     setMatches(next)
   }
   const addActivity = (kind: ActivityKind, text: string) => {
@@ -425,6 +450,7 @@ export default function App() {
   const duelSideValue = stake + duelPetValue
   const duelPotValue = duelSideValue * 2
   const opponentProfile = BOTS.find((bot) => bot.name === opponent)
+  const duelAccent = COLORS.find((color) => color.id === selectedColors[0])?.hex || '#3d8cf3'
   const presenceBots = Array.from({ length: 5 }, (_, index) => BOTS[(presenceOffset + index * 4) % BOTS.length])
 
   const resetDuelState = () => {
@@ -537,7 +563,7 @@ export default function App() {
           setResult(duelResult)
           setShowResultOverlay(true)
           setBalance((current) => current + payout)
-          setHistory((current) => [{ id: Date.now(), opponent, playerScore, botScore, result: duelResult, stake, payout, petValue: duelPetValue, sideValue: matchedSideValue, potValue: matchedPotValue, petCount: duelPets.length, time: timeNow(), rollId }, ...current].slice(0, 30))
+          setHistory((current) => [{ id: Date.now(), opponent, playerScore, botScore, result: duelResult, stake, payout, petValue: duelPetValue, sideValue: matchedSideValue, potValue: matchedPotValue, petCount: duelPets.length, pets: [...duelPets], time: timeNow(), rollId }, ...current].slice(0, 30))
           if (selectedMatchRef.current !== null) commitMatches(matchesRef.current.filter((item) => item.id !== selectedMatchRef.current))
           selectedMatchRef.current = null
           addActivity('result', `You ${duelResult === 'win' ? 'won' : duelResult === 'lose' ? 'lost' : 'tied'} against ${opponent} · ${formatCompact(matchedPotValue)} total pot, pets included`)
@@ -556,11 +582,11 @@ export default function App() {
   const activityIcon = (kind: ActivityKind) => kind === 'result' ? <Trophy size={13} /> : kind === 'roll' ? <Dices size={13} /> : kind === 'chat' ? <MessageCircle size={13} /> : <Zap size={13} />
 
   return (
-    <div className="dice-app live-dice-app">
+    <div className="dice-app live-dice-app" style={{ '--duel-accent': duelAccent } as React.CSSProperties}>
       <header className="dice-topbar">
         <button className="dice-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><span className="blue-brand-mark"><PawLogo size={37} /></span><span>paw<span>play</span><small>COLOR DICE</small></span></button>
         <nav className="dice-game-nav" aria-label="Main navigation"><span className="dice-header-game"><Dices size={17} /><span>Color Dice Duels</span></span><a className="dice-index-link" href={appRoute('pets')}><BookOpen size={15} /><span>Pet Index</span></a></nav>
-        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100% FICTIVE</span><span className="version-badge">v1.3.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Fictive Diamonds</small></span><button aria-label="Free Diamonds refill" onClick={refill}><Plus size={16} /></button></div></div>
+        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100% FICTIVE</span><span className="version-badge">v1.4.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Fictive Diamonds</small></span><button aria-label="Free Diamonds refill" onClick={refill}><Plus size={16} /></button></div></div>
       </header>
 
       <main className="dice-main live-dice-main">
@@ -591,8 +617,8 @@ export default function App() {
               const petsValue = getPetValue(match.pets)
               const sideValue = match.stake + petsValue
               const potValue = sideValue * 2
-              return <div className={`open-match-row ${match.status === 'rolling' ? 'match-in-progress' : ''}`} key={match.id} data-gem-stake={match.stake} data-pet-value={petsValue} data-side-value={sideValue} data-pot-value={potValue}>
-                <div className="match-players"><span className={`match-avatar tier-${PET_CATALOG[match.pet].tier.toLowerCase()}`}><img src={assetUrl(`images/pets/${match.pet}.png`)} alt={PET_CATALOG[match.pet].name} /><i /></span><div><strong>{match.bot}</strong><span><span className="online-dot" />{match.status === 'rolling' ? `Rolling against ${match.challenger || 'another bot'}` : 'Online · waiting for opponent'}</span></div></div>
+              return <div className={`open-match-row ${match.status === 'rolling' ? 'match-in-progress' : ''}`} key={match.id} style={{ viewTransitionName: `bot-match-${match.id}` } as React.CSSProperties} data-gem-stake={match.stake} data-pet-value={petsValue} data-side-value={sideValue} data-pot-value={potValue}>
+                <div className="match-players"><span className={`match-avatar tier-${PET_CATALOG[match.pet].tier.toLowerCase()}`}><img src={assetUrl(`images/pets/${match.pet}.png`)} alt={PET_CATALOG[match.pet].name} /><i /></span><div><strong>{match.bot}</strong><span className={`match-status ${match.status === 'rolling' ? 'is-rolling' : ''}`}><span className="online-dot" /><span className="match-status-text" key={match.challenger || 'waiting'}>{match.status === 'rolling' ? `Rolling against ${match.challenger || 'another bot'}` : 'Online · waiting for opponent'}</span></span></div></div>
                 <div className="match-pets">{match.pets.map((pet) => <PetThumbnail key={pet} petId={pet} />)}<small>{match.level} · RAP {formatCompact(petsValue)} / side</small></div>
                 <div className="match-value"><span className="match-value-label">TOTAL POT</span><strong><GemIcon size={18} />{formatCompact(potValue)}</strong><span>{formatCompact(sideValue)} each · matched</span><small>{formatCompact(match.stake)} gems + {formatCompact(petsValue)} pet RAP</small></div>
                 {match.status === 'waiting' ? <button className="join-duel-button" onClick={() => joinMatch(match)}>Join<ArrowRight size={14} /></button> : <span className="match-live-pill"><Radio size={12} />LIVE</span>}
@@ -601,12 +627,15 @@ export default function App() {
           </> : <div className="history-list">{history.length === 0 ? <div className="empty-history"><History size={32} /><h3>No duels yet</h3><p>Join a bot or create your own duel to see your results here.</p><button onClick={openCreateDuel}><Plus size={14} />Create your first duel</button></div> : history.map((entry) => {
             const sideValue = entry.sideValue ?? entry.stake
             const potValue = entry.potValue ?? entry.stake * 2
-            return <div className="history-row" key={entry.id}>
-              <span className={`history-result ${entry.result}`}>{entry.result === 'win' ? 'WON' : entry.result === 'lose' ? 'LOST' : 'TIE'}</span>
-              <div><strong>You vs {entry.opponent}</strong><span>{entry.time} · Score {entry.playerScore}–{entry.botScore} · {entry.rollId}</span></div>
-              <span className="history-stake"><small>TOTAL POT</small><strong><GemIcon size={15} />{formatCompact(potValue)}</strong><small>{entry.petCount ? `${entry.petCount * 2} pets + ${formatCompact(entry.stake * 2)} gems` : 'Diamonds only'}</small></span>
-              <strong className={`history-payout ${entry.result}`}>{entry.result === 'win' ? `+${formatCompact(sideValue)} net` : entry.result === 'lose' ? `−${formatCompact(sideValue)} value` : 'Side refunded'}</strong>
-            </div>
+            const petsValue = entry.petValue ?? 0
+            const petCount = entry.petCount ?? 0
+            return <article className={`history-row ${entry.result}`} key={entry.id}>
+              <span className={`history-result ${entry.result}`}>{entry.result === 'win' ? <Trophy size={12} /> : entry.result === 'lose' ? <ShieldX size={12} /> : <Dices size={12} />}<b>{entry.result === 'win' ? 'WON' : entry.result === 'lose' ? 'LOST' : 'TIE'}</b></span>
+              <div className="history-main"><strong>You vs {entry.opponent}</strong><span>{entry.time} · Score {entry.playerScore}–{entry.botScore} · {entry.rollId}</span></div>
+              <div className="match-pets history-pet-set" aria-label={entry.pets?.length ? `Matched set of ${entry.pets.length} pets, two sets in the pot` : 'No pet artwork recorded for this legacy duel'}>{entry.pets?.length ? entry.pets.map((pet) => <PetThumbnail key={pet} petId={pet} />) : <span className="history-no-pets">{petCount ? <Sparkles size={14} /> : <GemIcon size={15} />}{petCount ? `${petCount * 2} pets` : 'Gems only'}</span>}{entry.pets?.length ? <small>×2 matched sets</small> : null}</div>
+              <span className="history-stake"><small>TOTAL POT</small><strong><GemIcon size={15} />{formatCompact(potValue)}</strong><small>{formatCompact(entry.stake * 2)} Diamonds</small>{petCount > 0 && <small>+ {formatCompact(petsValue * 2)} pet RAP</small>}</span>
+              <div className={`history-payout ${entry.result}`}><strong>{entry.result === 'win' ? `+${formatCompact(sideValue)} net` : entry.result === 'lose' ? `−${formatCompact(sideValue)} value` : 'Side refunded'}</strong><span className="history-gem-delta">{entry.result === 'tie' ? 'Diamonds refunded' : `${entry.result === 'win' ? '+' : '−'}${formatCompact(entry.stake)} Diamonds`}</span><span className="history-pet-delta">{petCount ? entry.result === 'win' ? `+${petCount} pets · ${formatCompact(petsValue)} RAP` : entry.result === 'lose' ? `−${petCount} pets · ${formatCompact(petsValue)} RAP` : `${petCount} pets returned` : 'Legacy Diamonds duel'}</span></div>
+            </article>
           })}</div>}
           <div className="lobby-bottom-note"><Bot size={13} />Bots chat, pick favorites and play at their own pace. Equal Diamonds + pet RAP on both sides · simulated locally, no real players.</div>
         </section>

@@ -67,7 +67,7 @@ function PetIndexImage({ entry, allowRemote }: { entry: PetIndexEntry; allowRemo
   )
 }
 
-function PetCard({ entry, allowRemote }: { entry: PetIndexEntry; allowRemote: boolean }) {
+function PetCard({ entry, allowRemote, order }: { entry: PetIndexEntry; allowRemote: boolean; order: number }) {
   const variantClass = entry.variant.toLowerCase().replaceAll(' ', '-')
   return (
     <article
@@ -76,6 +76,7 @@ function PetCard({ entry, allowRemote }: { entry: PetIndexEntry; allowRemote: bo
       data-tier={entry.tier}
       data-variant={entry.variant}
       data-rap={entry.rap ?? ''}
+      style={{ '--pet-order': Math.min(order, 12) } as React.CSSProperties}
     >
       <div className="pet-card-badges">
         <span className="pet-index-tier">{entry.tier === 'Other' ? entry.category : entry.tier}</span>
@@ -215,7 +216,8 @@ export default function PetIndex() {
   }
   const goToPage = (next: number) => {
     setPage(Math.max(1, Math.min(next, totalPages)))
-    gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    gridRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
   }
 
   const modeLabel = mode === 'live' ? 'LIVE OFFICIAL DATA' : mode === 'cache' ? 'SAVED OFFICIAL DATA' : mode === 'snapshot' ? 'OFFLINE SNAPSHOT' : 'CONNECTING TO BIG GAMES'
@@ -272,17 +274,17 @@ export default function PetIndex() {
           </div>
         </section>
 
-        <section className="pet-index-results" ref={gridRef} aria-live="polite">
+        <section className="pet-index-results" ref={gridRef} aria-live="polite" aria-busy={loading && entries.length === 0}>
           <div className="pet-results-heading"><div><h2>{tier === 'All' ? 'All pets' : tier === 'Other' ? 'Other pets' : `${tier} pets`}</h2><p>{filtered.length.toLocaleString('en-US')} {filtered.length === 1 ? 'variant' : 'variants'} found{query ? ` for “${query}”` : ''}</p></div><span>{PAGE_SIZE} per page</span></div>
 
-          {loading && entries.length === 0 ? <div className="pet-index-grid">{Array.from({ length: 12 }, (_, index) => <div className="pet-index-card pet-card-skeleton" key={index}><span /><div /><span /><strong /></div>)}</div> : visible.length ? <>
-            <div className="pet-index-grid">{visible.map((entry) => <PetCard key={entry.key} entry={entry} allowRemote={mode !== 'snapshot'} />)}</div>
+          {loading && entries.length === 0 ? <div className="pet-index-grid pet-grid-animated is-loading" aria-label="Loading pet artworks, RAP and exist counts">{Array.from({ length: 12 }, (_, index) => <div className="pet-index-card pet-card-skeleton" key={index} aria-hidden="true"><span className="skeleton-badges" /><div className="skeleton-art"><i /></div><span className="skeleton-name" /><strong className="skeleton-value" /><small className="skeleton-exists" /></div>)}</div> : visible.length ? <>
+            <div className="pet-index-grid pet-grid-animated" key={`${query}-${tier}-${variant}-${sort}-${safePage}-${mode}`}>{visible.map((entry, index) => <PetCard key={entry.key} entry={entry} allowRemote={mode !== 'snapshot'} order={index} />)}</div>
             <nav className="pet-pagination" aria-label="Pet index pages">
               <button onClick={() => goToPage(safePage - 1)} disabled={safePage <= 1}><ChevronLeft size={15} />Previous</button>
               <span>Page <strong>{safePage}</strong> of <strong>{totalPages}</strong><small>{(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length}</small></span>
               <button onClick={() => goToPage(safePage + 1)} disabled={safePage >= totalPages}>Next<ChevronRight size={15} /></button>
             </nav>
-          </> : <div className="pet-index-empty"><Search size={30} /><h3>No pet matches these filters</h3><p>Try another name, tier or variant.</p><button onClick={resetFilters}>Reset all filters<ArrowRight size={14} /></button></div>}
+          </> : <div className="pet-index-empty"><span className="empty-search-art"><Search size={27} /><Sparkles size={13} /></span><h3>No pet matches these filters</h3><p>Try another name, tier or variant, or reset to see all tracked variants.</p><button onClick={resetFilters}>Reset all filters<ArrowRight size={14} /></button></div>}
         </section>
       </main>
 
