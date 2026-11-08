@@ -1,0 +1,265 @@
+/* Spacious live Color Dice lobby and the on-demand duel dialog. */
+.live-dice-app { min-height: 100vh; background: radial-gradient(ellipse 65% 38% at 50% 0, rgba(43,112,199,.13), transparent 72%); }
+.live-dice-main { width: min(1380px, 100%); padding: 30px 28px 42px; }
+.live-dice-app .dice-topbar { height: 72px; }
+.live-dice-app .dice-page-heading { gap: 24px; }
+.live-dice-app .dice-title-wrap { gap: 15px; }
+.live-dice-app .blue-dice-icon { width: 54px; height: 54px; border-radius: 15px; box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 10px 28px rgba(25,92,166,.15); }
+.live-dice-app .dice-title-wrap h1 { font-size: 30px; font-weight: 650; letter-spacing: -.75px; }
+.live-dice-app .dice-title-wrap p { margin-top: 5px; color: #8ba0b8; font-size: 11px; }
+.live-eyebrow { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; color: #5d9ac8; font-size: 7px; font-weight: 750; letter-spacing: 1.2px; }
+.live-dice-app .dice-page-actions { gap: 8px; }
+.live-dice-app .dice-page-actions button { height: 40px; padding: 0 14px; font-size: 10px; font-weight: 540; }
+.live-dice-app .dice-page-actions .create-duel-open { color: #f2f8ff; border-color: #3d8bee; background: linear-gradient(135deg, #3c93f4, #286ccb); box-shadow: 0 7px 20px rgba(40,113,204,.22), inset 0 1px 0 rgba(255,255,255,.18); }
+.live-dice-app .dice-page-actions .create-duel-open:hover { border-color: #76b6ff; background: linear-gradient(135deg, #50a4fa, #337dde); }
+
+.live-stats-bar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 0; min-height: 80px; margin-top: 24px; padding: 12px 18px; border-color: #243b55; border-radius: 14px; background: linear-gradient(110deg, rgba(16,29,45,.98), rgba(13,25,39,.98)); box-shadow: 0 10px 30px rgba(0,0,0,.1); }
+.live-stats-bar > div { min-width: 0; gap: 11px; margin-right: 20px; padding-right: 20px; }
+.live-stats-bar > div:nth-child(4) { margin-right: 0; padding-right: 0; border-right: 0; }
+.live-stats-bar .stat-icon { width: 39px; height: 39px; border-radius: 10px; }
+.live-stats-bar .stat-icon.green { color: #62d5a0; background: rgba(63,190,130,.1); }
+.live-stats-bar > div > span:last-child { color: #7f94ac; font-size: 8px; }
+.live-stats-bar strong { margin-top: 4px; font-size: 18px; font-weight: 620; }
+.live-stats-bar strong small { color: #65a2cb; font-size: 8px; font-weight: 550; }
+.live-stats-bar .local-game-note { padding-left: 18px; color: #74a58f; border-left: 1px solid #233248; font-size: 8px; white-space: nowrap; }
+
+.live-server-panel { display: grid; grid-template-columns: 160px minmax(0, 1fr) auto; align-items: center; gap: 18px; margin-top: 14px; padding: 12px 16px; border: 1px solid #234158; border-radius: 13px; background: linear-gradient(100deg, rgba(15,34,48,.96), rgba(13,25,39,.96)); }
+.live-server-title > span { display: flex; align-items: center; gap: 7px; color: #7ed6b0; font-size: 10px; font-weight: 650; }
+.live-server-title > span svg { filter: drop-shadow(0 0 5px rgba(88,220,158,.3)); }
+.live-server-title small { display: block; margin-top: 5px; color: #607d92; font-size: 7px; line-height: 1.4; }
+.live-event-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; min-width: 0; }
+.live-event { min-width: 0; display: flex; align-items: center; gap: 7px; padding: 7px 9px; border: 1px solid rgba(74,109,137,.18); border-radius: 8px; background: rgba(8,19,30,.38); }
+.live-event > span { display: flex; color: #72a5d2; }
+.live-event.result > span { color: #d9b965; }
+.live-event.roll > span { color: #a98ee6; }
+.live-event.chat > span { color: #64bda1; }
+.live-event p { min-width: 0; overflow: hidden; flex: 1; color: #91a9be; font-size: 8px; line-height: 1.45; text-overflow: ellipsis; white-space: nowrap; }
+.live-event time { color: #4f6b80; font-size: 6.5px; white-space: nowrap; }
+.bot-presence { display: flex; align-items: center; padding-left: 5px; }
+.bot-presence > span { position: relative; width: 31px; height: 31px; margin-left: -6px; border: 2px solid #2c4c67; border-radius: 9px; background: #172a3d; }
+.bot-presence > span:first-child { margin-left: 0; }
+.bot-presence img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+.bot-presence i, .match-avatar i, .arena-avatar i { position: absolute; right: -2px; bottom: -2px; width: 8px; height: 8px; border: 2px solid #102031; border-radius: 50%; background: #4bd396; }
+.bot-presence small { margin-left: 7px; color: #7592aa; font-size: 7px; white-space: nowrap; }
+
+.live-lobby-panel { overflow: visible; margin-top: 16px; border-color: #253c55; border-radius: 15px; box-shadow: 0 14px 38px rgba(0,0,0,.12); }
+.live-lobby-panel .lobby-tabs { min-height: 60px; padding: 9px 12px; border-radius: 15px 15px 0 0; background: #101d2b; }
+.live-lobby-panel .lobby-tabs > button { height: 39px; padding: 0 13px; font-size: 10px; }
+.live-lobby-panel .lobby-tabs > button > span { min-width: 21px; height: 19px; font-size: 8px; }
+.live-lobby-panel .lobby-tabs .sort-button { font-size: 9px; }
+.live-lobby-panel .lobby-table-head { grid-template-columns: 1.15fr 1.05fr .55fr 80px; gap: 15px; padding: 13px 18px; color: #668099; font-size: 8px; letter-spacing: .65px; }
+.live-lobby-panel .open-match-row { grid-template-columns: 1.15fr 1.05fr .55fr 80px; gap: 15px; min-height: 94px; padding: 14px 18px; background: rgba(14,26,40,.55); transition: background .18s, box-shadow .18s; animation: live-row-in .25s ease; }
+.live-lobby-panel .open-match-row:nth-child(even) { background: rgba(16,29,44,.4); }
+.live-lobby-panel .open-match-row:hover { z-index: 3; background: #122235; box-shadow: inset 3px 0 0 #357ed1; }
+.live-lobby-panel .open-match-row.match-in-progress { background: linear-gradient(90deg, rgba(37,43,70,.55), rgba(18,30,46,.65)); box-shadow: inset 3px 0 0 #8965d2; }
+@keyframes live-row-in { from { opacity: .35; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.live-lobby-panel .match-players { gap: 11px; }
+.live-lobby-panel .match-avatar { position: relative; width: 49px; height: 49px; border-radius: 12px; }
+.live-lobby-panel .match-avatar img { border-radius: 9px; }
+.live-lobby-panel .match-players > div { margin-left: 0; }
+.live-lobby-panel .match-players strong { color: #d7e5f5; font-size: 11px; font-weight: 570; }
+.live-lobby-panel .match-players > div > span { display: flex; align-items: center; gap: 5px; margin-top: 6px; color: #6e8aa2; font-size: 8px; }
+.live-lobby-panel .match-players .online-dot { width: 5px; height: 5px; }
+.live-lobby-panel .match-pets { display: flex; gap: 8px; padding-bottom: 17px; }
+.live-lobby-panel .match-pets > .pet-thumbnail, .duel-modal .match-pets > .pet-thumbnail { width: 46px; height: 46px; flex-basis: 46px; margin-left: 0; border-radius: 11px; }
+.live-lobby-panel .match-pets .pet-thumbnail > img, .duel-modal .match-pets .pet-thumbnail > img { border-radius: 8px; }
+.live-lobby-panel .match-pets > small { bottom: 1px; color: #67839b; font-size: 7px; }
+.live-lobby-panel .match-value strong { color: #a4e1f1; font-size: 14px; }
+.live-lobby-panel .match-value > span { margin-top: 5px; color: #698299; font-size: 8px; }
+.live-lobby-panel .join-duel-button { width: 76px; height: 36px; font-size: 10px; border-color: #3979bc; background: linear-gradient(135deg, #235f9d, #1b4b80); }
+.live-lobby-panel .join-duel-button:hover { background: linear-gradient(135deg, #2d78bf, #235e9c); }
+.match-live-pill { display: flex; align-items: center; justify-content: center; gap: 5px; width: 72px; height: 31px; color: #c0a4f0; border: 1px solid #59467f; border-radius: 8px; background: rgba(103,70,156,.14); font-size: 8px; font-weight: 700; }
+.match-live-pill svg { animation: live-pulse 1.4s ease infinite; }
+@keyframes live-pulse { 50% { opacity: .35; } }
+.live-lobby-panel .lobby-bottom-note { min-height: 43px; color: #648096; border-radius: 0 0 15px 15px; background: #0e1926; font-size: 8px; }
+.live-lobby-panel .empty-history { min-height: 320px; }
+.live-lobby-panel .empty-history h3 { font-size: 18px; }
+.live-lobby-panel .empty-history p { font-size: 10px; }
+.live-lobby-panel .empty-history button { display: flex; align-items: center; gap: 6px; margin-top: 18px; padding: 10px 14px; color: #d2e9ff; border: 1px solid #3979bc; border-radius: 8px; background: #1b4f84; font-size: 10px; }
+.live-lobby-panel .history-row { min-height: 72px; padding: 12px 18px; }
+.live-lobby-panel .history-row > div > strong { font-size: 11px; }
+.live-lobby-panel .history-row > div > span { font-size: 8px; }
+
+/* Duel dialog */
+.duel-modal-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; overflow-y: auto; padding: 22px; background: rgba(3,8,15,.84); backdrop-filter: blur(10px); }
+.duel-modal { width: min(970px, 100%); max-height: calc(100vh - 44px); overflow-y: auto; border: 1px solid #34597b; border-radius: 20px; background: radial-gradient(ellipse 70% 50% at 30% 0, rgba(39,99,160,.13), transparent 70%), #0f1b29; box-shadow: 0 30px 100px rgba(0,0,0,.58), inset 0 1px 0 rgba(255,255,255,.04); animation: duel-dialog-in .22s ease; }
+@keyframes duel-dialog-in { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+.duel-modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 21px 24px; border-bottom: 1px solid #243b52; background: rgba(16,31,47,.8); }
+.duel-modal-kicker { display: flex; align-items: center; gap: 6px; color: #64a1ce; font-size: 7px; font-weight: 750; letter-spacing: 1px; }
+.duel-modal-header h2 { margin-top: 5px; color: #e7f2ff; font-size: 24px; font-weight: 620; letter-spacing: -.4px; }
+.duel-modal-header p { margin-top: 5px; color: #7891a9; font-size: 9px; }
+.duel-modal-close { width: 37px; height: 37px; display: grid; place-items: center; flex-shrink: 0; color: #8da5bd; border: 1px solid #2b455f; border-radius: 10px; background: #132437; }
+.duel-modal-close:hover:not(:disabled) { color: white; border-color: #4d759c; }
+.duel-modal-body { display: grid; grid-template-columns: 1.12fr .88fr; }
+.duel-arena-column { min-width: 0; padding: 22px; border-right: 1px solid #23394f; }
+.duel-setup-column { min-width: 0; padding: 22px; background: rgba(10,21,33,.4); }
+.arena-player-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.duel-modal .arena-player { flex: 1; gap: 9px; }
+.duel-modal .arena-player.opponent { justify-content: flex-end; }
+.duel-modal .arena-avatar { position: relative; width: 51px; height: 51px; overflow: visible; border-radius: 12px; }
+.duel-modal .arena-avatar img { border-radius: 9px; }
+.duel-modal .arena-player > div > span { max-width: 112px; font-size: 7px; }
+.duel-modal .arena-player > strong { font-size: 29px; }
+.arena-vs { display: grid; place-items: center; width: 31px; height: 25px; color: #6f8ca7; border: 1px solid #29445d; border-radius: 6px; background: #122235; font-size: 7px; font-weight: 750; }
+.duel-modal .modal-duel-pets { display: flex; align-items: center; justify-content: center; gap: 9px; margin: 20px 0 4px; padding: 0 0 19px; }
+.duel-modal .modal-duel-pets > span:last-child { position: absolute; bottom: 0; margin: 0; color: #648199; font-size: 7px; }
+.modal-dice-arena { min-height: 218px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 11px; padding: 25px 15px 18px; border: 1px solid #294864; border-radius: 15px; background: radial-gradient(ellipse at 50% 20%, rgba(46,112,178,.15), transparent 65%), linear-gradient(160deg, #10263b, #0b1a2a); box-shadow: inset 0 1px 12px rgba(56,132,198,.05); }
+.modal-dice-arena .dice-results { width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.modal-dice-arena .color-die { width: min(70px, 100%); aspect-ratio: 1; height: auto; justify-self: center; }
+.modal-dice-arena .die-color-name { margin-top: 14px; font-size: 8px; }
+.modal-dice-arena .arena-status { margin-top: 23px; color: #7494ae; font-size: 8px; }
+.modal-dice-arena.is-rolling { border-color: #3c6993; box-shadow: inset 0 0 30px rgba(45,119,188,.07), 0 0 20px rgba(44,114,183,.05); }
+.duel-result-banner { display: flex; align-items: center; gap: 12px; margin-top: 13px; padding: 13px 15px; border: 1px solid #2f6652; border-radius: 11px; background: rgba(41,124,87,.12); color: #6ed5a4; }
+.duel-result-banner.lose { color: #ee8d9d; border-color: #70404c; background: rgba(151,53,72,.1); }
+.duel-result-banner.tie { color: #d8bb6e; border-color: #6b5b35; background: rgba(143,115,44,.1); }
+.duel-result-banner strong { display: block; color: currentColor; font-size: 13px; }
+.duel-result-banner span { display: block; margin-top: 4px; color: #88a9b7; font-size: 8px; }
+.duel-setup-column .stake-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #a2b7cc; font-size: 9px; }
+.duel-setup-column .stake-heading > span { display: flex; align-items: center; gap: 4px; color: #718da6; font-size: 8px; }
+.duel-setup-column .stake-heading strong { display: flex; align-items: center; gap: 4px; color: #a4d7e9; }
+.color-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.color-option { position: relative; height: 43px; display: flex; align-items: center; justify-content: center; gap: 7px; color: #879eb4; border: 1px solid #2b435b; border-radius: 9px; background: linear-gradient(180deg, #152639, #111e2d); font-size: 9px; transition: border-color .15s, transform .15s, background .15s; }
+.color-option:hover:not(:disabled) { transform: translateY(-1px); color: #d5e6f6; border-color: #4a6b89; }
+.color-option.selected { color: #e2effc; border-color: #497daa; background: #1b324a; box-shadow: inset 0 0 0 1px rgba(127,187,236,.07); }
+.color-option > span { width: 12px; height: 12px; border-radius: 4px; }
+.color-option > small { position: absolute; top: 4px; right: 4px; width: 13px; height: 13px; display: grid; place-items: center; color: #d9edff; border-radius: 50%; background: #32618b; font-size: 7px; }
+.stake-section { margin-top: 22px; }
+.duel-setup-column .stake-input { height: 49px; margin-top: 10px; }
+.duel-setup-column .stake-input input { font-size: 18px; font-weight: 580; }
+.duel-setup-column .stake-input > button { height: 33px; min-width: 35px; font-size: 9px; }
+.stake-help { margin-top: 7px; color: #5e7a92; font-size: 7.5px; line-height: 1.5; }
+.duel-setup-column .quick-stakes { grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 9px; }
+.duel-setup-column .quick-stakes > button { height: 31px; color: #7793ac; font-size: 8px; }
+.duel-setup-column .quick-stakes > button.active { color: #c0e3ff; border-color: #3b75aa; background: #19344f; }
+.opponent-note { display: flex; align-items: center; gap: 10px; margin-top: 18px; padding: 11px; color: #7e9bb7; border: 1px solid #243c52; border-radius: 9px; background: #101e2d; }
+.opponent-note strong { display: block; color: #a9c2d9; font-size: 9px; }
+.opponent-note span { display: block; margin-top: 4px; color: #637e94; font-size: 7px; line-height: 1.45; }
+.duel-setup-column .roll-dice-button { height: 51px; margin-top: 16px; font-size: 12px; }
+.stake-error { display: block; margin-top: 8px; color: #d98c99; font-size: 8px; text-align: center; }
+.random-local-note { display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 10px; color: #526f86; font-size: 7px; line-height: 1.4; text-align: center; }
+.duel-modal .die-owner-tags { gap: 3px; }
+.duel-modal .die-owner-tags > span { font-size: 5px; }
+
+/* Keep the expanded lobby readable at desktop viewing distances. */
+.live-dice-app .dice-page-actions button { font-size: 11px; }
+.live-stats-bar > div > span:last-child { font-size: 9px; }
+.live-stats-bar strong { font-size: 20px; }
+.live-server-title > span { font-size: 11px; }
+.live-server-title small { font-size: 8px; }
+.live-event p { font-size: 9px; }
+.live-event time { font-size: 7px; }
+.live-lobby-panel .lobby-tabs > button { font-size: 11px; }
+.live-lobby-panel .lobby-tabs .sort-button { font-size: 10px; }
+.live-lobby-panel .lobby-table-head { font-size: 9px; }
+.live-lobby-panel .match-players strong { font-size: 12px; }
+.live-lobby-panel .match-players > div > span { font-size: 9px; }
+.live-lobby-panel .match-pets > small { font-size: 8px; }
+.live-lobby-panel .match-value > span { font-size: 9px; }
+.live-lobby-panel .join-duel-button { font-size: 11px; }
+.live-lobby-panel .lobby-bottom-note { font-size: 9px; }
+.duel-modal-header p { font-size: 10px; }
+.duel-setup-column .stake-heading { font-size: 10px; }
+.duel-setup-column .stake-heading > span { font-size: 9px; }
+.color-option { font-size: 10px; }
+.stake-help { font-size: 8.5px; }
+.duel-setup-column .quick-stakes > button { font-size: 9px; }
+.opponent-note strong { font-size: 10px; }
+.opponent-note span { font-size: 8px; }
+.duel-setup-column .roll-dice-button { font-size: 13px; }
+.random-local-note { font-size: 8px; }
+
+@media (max-width: 1120px) {
+  .live-stats-bar { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .live-stats-bar .local-game-note { display: none; }
+  .live-stats-bar > div { margin-right: 12px; padding-right: 12px; }
+  .live-server-panel { grid-template-columns: 130px minmax(0, 1fr); }
+  .bot-presence { display: none; }
+  .live-event-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .live-event:nth-child(3) { display: none; }
+  .live-lobby-panel .lobby-table-head, .live-lobby-panel .open-match-row { grid-template-columns: 1.1fr .9fr .5fr 75px; gap: 10px; }
+}
+@media (max-width: 850px) {
+  .live-dice-main { padding: 22px 15px 32px; }
+  .live-dice-app .dice-page-heading { align-items: flex-start; flex-direction: column; }
+  .live-dice-app .dice-page-actions { width: 100%; }
+  .live-dice-app .dice-page-actions button { flex: 1; justify-content: center; }
+  .live-stats-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 0; }
+  .live-stats-bar > div:nth-child(2) { border-right: 0; }
+  .live-stats-bar > div:nth-child(4) { border-right: 0; }
+  .live-server-panel { grid-template-columns: 1fr; gap: 10px; }
+  .live-server-title { display: flex; align-items: center; justify-content: space-between; }
+  .live-server-title small { margin: 0; }
+  .live-lobby-panel .lobby-table-head { display: none; }
+  .live-lobby-panel .open-match-row { grid-template-columns: minmax(0, 1fr) auto; gap: 13px; padding: 15px; }
+  .live-lobby-panel .match-players { grid-column: 1; grid-row: 1; }
+  .live-lobby-panel .match-value { grid-column: 2; grid-row: 1; text-align: right; }
+  .live-lobby-panel .match-pets { grid-column: 1; grid-row: 2; }
+  .live-lobby-panel .join-duel-button, .live-lobby-panel .match-live-pill { grid-column: 2; grid-row: 2; align-self: center; }
+  .duel-modal-body { grid-template-columns: 1fr; }
+  .duel-arena-column { border-right: 0; border-bottom: 1px solid #23394f; }
+}
+@media (max-width: 600px) {
+  .live-dice-app .dice-topbar { height: 62px; padding: 0 11px; gap: 9px; }
+  .live-dice-app .dice-header-game { display: none; }
+  .live-dice-app .dice-index-link { height: 31px; padding: 0 9px; font-size: 8px; }
+  .live-dice-app .demo-label { display: none; }
+  .live-dice-app .dice-header-right { gap: 7px; }
+  .live-dice-app .gems-balance { height: 37px; }
+  .live-dice-app .gems-balance > span { min-width: 62px; }
+  .live-dice-app .gems-balance strong { font-size: 11px; }
+  .live-dice-main { padding: 18px 10px 25px; }
+  .live-dice-app .dice-title-wrap { gap: 10px; }
+  .live-dice-app .blue-dice-icon { width: 44px; height: 44px; }
+  .live-dice-app .dice-title-wrap h1 { font-size: 24px; }
+  .live-dice-app .dice-title-wrap p { font-size: 9px; }
+  .live-dice-app .dice-page-actions { gap: 5px; }
+  .live-dice-app .dice-page-actions button { height: 38px; padding: 0 7px; font-size: 8px; }
+  .live-stats-bar { margin-top: 17px; padding: 11px; }
+  .live-stats-bar > div { gap: 7px; margin-right: 7px; padding-right: 7px; }
+  .live-stats-bar .stat-icon { width: 31px; height: 31px; }
+  .live-stats-bar strong { font-size: 15px; }
+  .live-stats-bar > div > span:last-child { font-size: 7px; }
+  .live-server-panel { padding: 11px; }
+  .live-server-title small { font-size: 6px; }
+  .live-event-list { grid-template-columns: 1fr; }
+  .live-event:nth-child(2) { display: none; }
+  .live-event p { font-size: 8px; }
+  .live-lobby-panel .lobby-tabs { padding: 7px; }
+  .live-lobby-panel .lobby-tabs > button { padding: 0 8px; font-size: 8px; }
+  .live-lobby-panel .lobby-tabs .sort-button { font-size: 0; }
+  .live-lobby-panel .lobby-tabs .sort-button svg { margin: 0; }
+  .live-lobby-panel .match-players strong { font-size: 10px; }
+  .live-lobby-panel .match-players > div > span { font-size: 7px; }
+  .live-lobby-panel .match-avatar { width: 41px; height: 41px; }
+  .live-lobby-panel .match-pets > .pet-thumbnail { width: 39px; height: 39px; flex-basis: 39px; }
+  .live-lobby-panel .match-pets { gap: 6px; }
+  .live-lobby-panel .match-value strong { font-size: 11px; }
+  .live-lobby-panel .join-duel-button { width: 62px; height: 33px; font-size: 8px; }
+  .match-live-pill { width: 60px; font-size: 7px; }
+  .live-lobby-panel .lobby-bottom-note { padding: 10px 14px; font-size: 7px; line-height: 1.5; }
+  .live-lobby-panel .history-row { grid-template-columns: 40px 1fr 65px; }
+  .live-lobby-panel .history-payout { display: none; }
+  .duel-modal-backdrop { padding: 0; }
+  .duel-modal { width: 100%; max-height: 100vh; min-height: 100vh; border: 0; border-radius: 0; }
+  .duel-modal-header { padding: 16px; }
+  .duel-modal-header h2 { font-size: 21px; }
+  .duel-modal-header p { font-size: 8px; }
+  .duel-arena-column, .duel-setup-column { padding: 15px 13px; }
+  .duel-modal .arena-player { gap: 5px; }
+  .duel-modal .arena-avatar { width: 40px; height: 40px; }
+  .duel-modal .arena-player > div > span { max-width: 66px; font-size: 6px; }
+  .duel-modal .arena-player > strong { font-size: 22px; }
+  .arena-player-row { gap: 6px; }
+  .arena-vs { width: 25px; }
+  .duel-modal .modal-duel-pets > .pet-thumbnail { width: 42px; height: 42px; flex-basis: 42px; }
+  .modal-dice-arena { min-height: 185px; padding: 19px 10px 14px; }
+  .modal-dice-arena .dice-results { gap: 7px; }
+  .modal-dice-arena .color-die { width: min(57px, 100%); border-radius: 13px; }
+  .modal-dice-arena .arena-status { font-size: 7px; }
+  .color-picker { gap: 6px; }
+  .color-option { height: 40px; font-size: 8px; }
+  .duel-setup-column .stake-input input { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-lobby-panel .open-match-row, .duel-modal, .match-live-pill svg { animation: none; }
+}

@@ -9,6 +9,7 @@ import './dice-only.css'
 import './dice-polish.css'
 import './pet-variants.css'
 import './pet-index.css'
+import './live-dice.css'
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
 
