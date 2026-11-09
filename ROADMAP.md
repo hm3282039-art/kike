@@ -127,7 +127,7 @@ Aucun pet + aucun RAP + aucune valeur d’inventaire
 | **1.3.1** | Correctifs éventuels de la 1.3.0 uniquement. | Aucune. |
 | **1.4.1** | Correctifs éventuels de la 1.4.0 uniquement. | Aucune. |
 | **1.5.1** | Correctifs éventuels de la 1.5.0 uniquement. | Aucune. |
-| **1.7.0 et suivantes** | Améliorations des jeux existants, à prioriser. | Aucune nouveauté promise. |
+| **1.8.0 et suivantes** | Améliorations des jeux existants, à prioriser. | Aucune nouveauté promise. |
 
 ## Propositions graphiques restantes — idées non commencées
 
@@ -206,3 +206,16 @@ Le point 5 (confirmation de sortie et reprise après rechargement) reste à fair
 - Résultats distincts, historique des nouvelles pertes avec mise exacte (anciennes données conservées), sons opt-in et reduced-motion.
 - Règles inchangées : Diamonds fictifs uniquement, solde partagé, survie 82 %, multiplicateurs fixes et tirages indépendants ; aucune mécanique de réflexes promise.
 - Vérifications : TypeScript/Vite normal et statique, soldes exacts après collision/encaissement, 12 routes avec paiement automatique final, responsive 320/390/1440 px, navigation statique des quatre pages. Capture desktop inspectée.
+
+
+## Version 1.7.0 — Chicken Crossing, décisions et confort
+
+- Trois rythmes : Détente (90 % survie), Classique (82 %, règles originales conservées), Intense (70 %). Chaque route reste un tirage indépendant ; les réglages de mise, mode et objectif sont verrouillés après départ.
+- Multiplicateurs calculés par mode : `floor(0.96 / survie^route * 100) / 100`, avec remboursement de la mise au refuge 0. Les montants affichés incluent la mise ; le bénéfice net est affiché séparément.
+- Objectif d’encaissement automatique au refuge 3, 6, 9 ou 12, avec paiement et probabilité d’atteinte affichés avant le départ. Encaissement manuel anticipé possible ; l’objectif ne protège pas d’une collision et chaque traversée reste déclenchée par le joueur.
+- Bilan des dix dernières parties, meilleur refuge récent, nombre d’encaissements et net cumulé. Les anciens historiques sans mode restent lisibles (Classique) ; les anciennes mises inconnues ne sont pas inventées.
+- Couleurs d’ambiance par mode, aperçu des 12 multiplicateurs et refuge objectif marqué sur le plateau.
+- Animation rapide optionnelle (0,42 s contre 0,85 s), sans changement des probabilités ; reduced-motion conservé.
+- Mobile : boutons fixes Avancer/Encaisser pendant la partie et retour visuel vers le plateau au départ.
+- Protection des doubles actions : une partie ne peut être débitée ou créditée qu’une fois. Confirmation de navigation, focus piégé dans la boîte de confirmation et avertissement navigateur sur sortie/rechargement. La reprise après rechargement n’est pas implémentée : une sortie confirmée abandonne toujours la mise.
+- Vérifications : `npm test` (moteurs poker/poulet), trois modes avec paiement exact, objectif 3 automatique, doubles clics, collision, solde insuffisant, confirmation de sortie, vitesse rapide, historique, mobile 320/390 px et desktop. Captures desktop/mobile inspectées.

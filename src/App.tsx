@@ -596,7 +596,7 @@ export default function App() {
       <header className="dice-topbar">
         <button className="dice-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><span className="blue-brand-mark"><PawLogo size={37} /></span><span>paw<span>play</span><small>COLOR DICE</small></span></button>
         <nav className="dice-game-nav" aria-label="Navigation principale"><span className="dice-header-game"><Dices size={17} /><span>Color Dice Duels</span></span><a className="dice-index-link poker-index-link" href={appRoute('poker')}><Spade size={15} /><span>Poker</span></a><a className="dice-index-link" href={appRoute('chicken')}>🐔<span>Poulet</span></a><a className="dice-index-link" href={appRoute('pets')}><BookOpen size={15} /><span>Index des pets</span></a></nav>
-        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100 % FICTIF</span><span className="version-badge">v1.6.2</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Diamonds fictifs</small></span><button aria-label="Recharge gratuite de Diamonds" onClick={refill}><Plus size={16} /></button></div></div>
+        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100 % FICTIF</span><span className="version-badge">v1.7.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Diamonds fictifs</small></span><button aria-label="Recharge gratuite de Diamonds" onClick={refill}><Plus size={16} /></button></div></div>
       </header>
 
       <main className="dice-main live-dice-main">
