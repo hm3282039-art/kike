@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { ArrowDownUp, ArrowRight, BookOpen, Bot, Check, Crown, Dices, HelpCircle, History, MessageCircle, Plus, Radio, ShieldCheck, ShieldX, Sparkles, Swords, Trophy, Users, X, Zap } from 'lucide-react'
+import { ArrowDownUp, ArrowRight, BookOpen, Bot, Check, Crown, Dices, HelpCircle, History, MessageCircle, Plus, Radio, ShieldCheck, ShieldX, Sparkles, Spade, Swords, Trophy, Users, X, Zap } from 'lucide-react'
 import { GemIcon, PawLogo } from './components/GameArt'
 import { appRoute, assetUrl } from './lib/appUrl'
+import { DIAMOND_REFILL, useDiamondBalance, useStoredState } from './lib/balance'
 
 type DiceColor = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple'
 type DuelResult = 'win' | 'lose' | 'tie'
@@ -87,14 +88,13 @@ const getSideValue = (stake: number, pets: PetId[]) => stake + getPetValue(pets)
 const getPotValue = (stake: number, pets: PetId[]) => getSideValue(stake, pets) * 2
 
 const MIN_STAKE = 10_000_000
-const STARTING_BALANCE = 100_000_000_000
 const STAKE_LADDER = [10_000_000, 25_000_000, 50_000_000, 100_000_000, 250_000_000, 500_000_000, 1_000_000_000, 2_500_000_000, 5_000_000_000]
 const RISK_STAKES: Record<BotRisk, number[]> = {
   low: STAKE_LADDER.slice(0, 4),
   medium: STAKE_LADDER.slice(2, 7),
   high: STAKE_LADDER.slice(5),
 }
-const QUICK_STAKES = [10_000_000, 25_000_000, 50_000_000, 100_000_000, 250_000_000, 500_000_000]
+const QUICK_STAKES = STAKE_LADDER
 
 const COLORS: { id: DiceColor; label: string; hex: string; dark: string }[] = [
   { id: 'red', label: 'Red', hex: '#f15467', dark: '#a8243d' },
@@ -172,19 +172,6 @@ function chooseBotColors(name: string): DiceColor[] {
 function fourRandomColors() { return Array.from({ length: 4 }, () => COLORS[randomInt(COLORS.length)].id) }
 function scoreColors(dice: DiceColor[], colors: DiceColor[]) { return dice.filter((color) => colors.includes(color)).length }
 
-function useStoredState<T>(key: string, initialValue: T) {
-  const [value, setValue] = useState<T>(() => {
-    try {
-      const stored = localStorage.getItem(key)
-      return stored ? JSON.parse(stored) as T : initialValue
-    } catch { return initialValue }
-  })
-  useEffect(() => {
-    try { localStorage.setItem(key, JSON.stringify(value)) } catch { /* Storage is optional. */ }
-  }, [key, value])
-  return [value, setValue] as const
-}
-
 function PetThumbnail({ petId }: { petId: PetId }) {
   const pet = PET_CATALOG[petId]
   const variantClass = pet.variant.toLowerCase().replaceAll(' ', '-')
@@ -248,7 +235,7 @@ function createBotMatch(id: number, excludedNames: string[]): OpenMatch {
 }
 
 export default function App() {
-  const [balance, setBalance] = useStoredState('pawplay-live-balance-v1', STARTING_BALANCE)
+  const [balance, setBalance] = useDiamondBalance()
   const [history, setHistory] = useStoredState<HistoryEntry[]>('pawplay-live-history-v1', [])
   const [matches, setMatches] = useState<OpenMatch[]>(INITIAL_MATCHES)
   const matchesRef = useRef<OpenMatch[]>(INITIAL_MATCHES)
@@ -368,20 +355,18 @@ export default function App() {
           const opponent = randomItem(opponents).name
           battlesRef.current = [...battlesRef.current, { id: match.id, opponent, resolveAt: now + 2200 + randomInt(2500) }]
           commitMatches(nextMatches.map((item) => item.id === match.id ? { ...item, status: 'rolling', challenger: opponent } : item))
-          const side = getSideValue(match.stake, match.pets)
           addActivity('roll', randomItem([
-            `${opponent} accepted ${match.bot}’s duel · ${formatCompact(side)} matched per side. GL!`,
-            `${opponent}: I’m in, ${match.bot}. Same stake, same 3 pets — rolling now!`,
-            `${match.bot} vs ${opponent} · both locked ${formatCompact(side)}. Dice are rolling!`,
+            `${opponent} accepted ${match.bot}’s duel · ${formatCompact(match.stake)} Diamonds each + matched pets. GL!`,
+            `${opponent}: I’m in, ${match.bot}. Same Diamonds, same 3 pets — rolling now!`,
+            `${match.bot} vs ${opponent} · ${formatCompact(match.stake)} Diamonds each. Dice are rolling!`,
           ]))
         } else if (nextMatches.length < 10) {
           const match = createBotMatch(nextMatchId.current++, nextMatches.map((item) => item.bot))
           commitMatches([match, ...nextMatches])
-          const side = getSideValue(match.stake, match.pets)
           addActivity('create', randomItem([
-            `${match.bot}: anyone for a ${formatCompact(side)} matched duel? 3 pets each.`,
-            `${match.bot} is looking for an opponent · ${formatCompact(side)} per side, pets included.`,
-            `${match.bot}: I’ve got ${formatCompact(match.stake)} + 3 pets ready. Who wants to roll?`,
+            `${match.bot}: anyone for a ${formatCompact(match.stake)} Diamonds duel? Matched 3-pet demo sets included.`,
+            `${match.bot} is looking for an opponent · ${formatCompact(match.stake)} Diamonds + matched pets.`,
+            `${match.bot}: I’ve got ${formatCompact(match.stake)} Diamonds + 3 demo pets ready. Who wants to roll?`,
           ]))
         } else if (randomInt(100) < 46) {
           const chatter = randomItem(BOTS)
@@ -445,6 +430,7 @@ export default function App() {
 
   const sortedMatches = useMemo(() => [...matches].sort((a, b) => sortDescending ? getPotValue(b.stake, b.pets) - getPotValue(a.stake, a.pets) : getPotValue(a.stake, a.pets) - getPotValue(b.stake, b.pets)), [matches, sortDescending])
   const totalValue = matches.reduce((sum, match) => sum + getPotValue(match.stake, match.pets), 0)
+  const totalDiamondStakes = matches.reduce((sum, match) => sum + match.stake, 0)
   const liveBattles = matches.filter((match) => match.status === 'rolling').length
   const duelPetValue = getPetValue(duelPets)
   const duelSideValue = stake + duelPetValue
@@ -540,7 +526,7 @@ export default function App() {
     setScore(null)
     setBotColors(nextBotColors)
     setLastRollId(rollId)
-    if (selectedMatchRef.current === null) addActivity('roll', `${opponent} accepted your challenge · ${formatCompact(matchedSideValue)} matched per side.`)
+    if (selectedMatchRef.current === null) addActivity('roll', `${opponent} accepted your challenge · ${formatCompact(stake)} Diamonds each + the same demo pet set.`)
     revealedRef.current = 0
     setRevealedCount(0)
 
@@ -576,7 +562,7 @@ export default function App() {
   }
 
   const refill = () => {
-    setBalance((current) => current + 25_000_000_000)
+    setBalance((current) => current + DIAMOND_REFILL)
     setToast('25B free fictive Diamonds added.')
   }
   const activityIcon = (kind: ActivityKind) => kind === 'result' ? <Trophy size={13} /> : kind === 'roll' ? <Dices size={13} /> : kind === 'chat' ? <MessageCircle size={13} /> : <Zap size={13} />
@@ -585,8 +571,8 @@ export default function App() {
     <div className="dice-app live-dice-app" style={{ '--duel-accent': duelAccent } as React.CSSProperties}>
       <header className="dice-topbar">
         <button className="dice-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><span className="blue-brand-mark"><PawLogo size={37} /></span><span>paw<span>play</span><small>COLOR DICE</small></span></button>
-        <nav className="dice-game-nav" aria-label="Main navigation"><span className="dice-header-game"><Dices size={17} /><span>Color Dice Duels</span></span><a className="dice-index-link" href={appRoute('pets')}><BookOpen size={15} /><span>Pet Index</span></a></nav>
-        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100% FICTIVE</span><span className="version-badge">v1.4.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Fictive Diamonds</small></span><button aria-label="Free Diamonds refill" onClick={refill}><Plus size={16} /></button></div></div>
+        <nav className="dice-game-nav" aria-label="Main navigation"><span className="dice-header-game"><Dices size={17} /><span>Color Dice Duels</span></span><a className="dice-index-link poker-index-link" href={appRoute('poker')}><Spade size={15} /><span>Poker</span></a><a className="dice-index-link" href={appRoute('pets')}><BookOpen size={15} /><span>Pet Index</span></a></nav>
+        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100% FICTIVE</span><span className="version-badge">v1.5.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Fictive Diamonds</small></span><button aria-label="Free Diamonds refill" onClick={refill}><Plus size={16} /></button></div></div>
       </header>
 
       <main className="dice-main live-dice-main">
@@ -598,7 +584,7 @@ export default function App() {
         <section className="dice-stats-bar live-stats-bar">
           <div><span className="stat-icon blue"><Swords size={18} /></span><span>Open Duels<strong>{matches.length}</strong></span></div>
           <div><span className="stat-icon green"><Users size={18} /></span><span>Bots Online<strong>{onlineCount}</strong></span></div>
-          <div><span className="stat-icon cyan"><GemIcon size={21} /></span><span>Open Total Value<strong>{formatCompact(totalValue)} <small>GEMS + RAP</small></strong></span></div>
+          <div><span className="stat-icon cyan"><GemIcon size={21} /></span><span>Open Diamond Stakes<strong>{formatCompact(totalDiamondStakes)} <small>DIAMONDS ONLY</small></strong><small className="stat-subline">Total incl. pet RAP {formatCompact(totalValue)}</small></span></div>
           <div><span className="stat-icon purple"><Sparkles size={18} /></span><span>Eligible Pets<strong>{PET_IDS.length} <small>RAP ≥10M</small></strong></span></div>
           <span className="local-game-note"><span className="online-dot" />{liveBattles ? `${liveBattles} live bot ${liveBattles === 1 ? 'battle' : 'battles'}` : 'Bots ready to play'}</span>
         </section>
@@ -612,7 +598,7 @@ export default function App() {
         <section className="duel-lobby-panel live-lobby-panel">
           <div className="lobby-tabs"><button className={activeTab === 'open' ? 'active' : ''} onClick={() => setActiveTab('open')}><Swords size={15} />Open Duels<span>{matches.length}</span></button><button className={activeTab === 'history' ? 'active' : ''} onClick={() => setActiveTab('history')}><History size={15} />Your History<span>{history.length}</span></button><button className="sort-button" onClick={() => setSortDescending((current) => !current)}><ArrowDownUp size={14} />{sortDescending ? 'Highest value' : 'Lowest value'}</button></div>
           {activeTab === 'open' ? <>
-            <div className="lobby-table-head"><span>Players</span><span>Matched pet set · each side</span><span>Total pot / Side</span><span>Action</span></div>
+            <div className="lobby-table-head"><span>Players</span><span>Matched pet set · each side</span><span>Diamonds / total with pets</span><span>Action</span></div>
             <div className="live-match-list">{sortedMatches.map((match) => {
               const petsValue = getPetValue(match.pets)
               const sideValue = match.stake + petsValue
@@ -620,8 +606,8 @@ export default function App() {
               return <div className={`open-match-row ${match.status === 'rolling' ? 'match-in-progress' : ''}`} key={match.id} style={{ viewTransitionName: `bot-match-${match.id}` } as React.CSSProperties} data-gem-stake={match.stake} data-pet-value={petsValue} data-side-value={sideValue} data-pot-value={potValue}>
                 <div className="match-players"><span className={`match-avatar tier-${PET_CATALOG[match.pet].tier.toLowerCase()}`}><img src={assetUrl(`images/pets/${match.pet}.png`)} alt={PET_CATALOG[match.pet].name} /><i /></span><div><strong>{match.bot}</strong><span className={`match-status ${match.status === 'rolling' ? 'is-rolling' : ''}`}><span className="online-dot" /><span className="match-status-text" key={match.challenger || 'waiting'}>{match.status === 'rolling' ? `Rolling against ${match.challenger || 'another bot'}` : 'Online · waiting for opponent'}</span></span></div></div>
                 <div className="match-pets">{match.pets.map((pet) => <PetThumbnail key={pet} petId={pet} />)}<small>{match.level} · RAP {formatCompact(petsValue)} / side</small></div>
-                <div className="match-value"><span className="match-value-label">TOTAL POT</span><strong><GemIcon size={18} />{formatCompact(potValue)}</strong><span>{formatCompact(sideValue)} each · matched</span><small>{formatCompact(match.stake)} gems + {formatCompact(petsValue)} pet RAP</small></div>
-                {match.status === 'waiting' ? <button className="join-duel-button" onClick={() => joinMatch(match)}>Join<ArrowRight size={14} /></button> : <span className="match-live-pill"><Radio size={12} />LIVE</span>}
+                <div className="match-value"><span className="match-value-label">DIAMOND STAKE</span><strong><GemIcon size={18} />{formatCompact(match.stake)}</strong><span>Total pot {formatCompact(potValue)} incl. RAP</span><small>{formatCompact(sideValue)} / side · matched demo pets</small></div>
+                {match.status === 'waiting' ? <button className="join-duel-button" disabled={balance < match.stake} title={balance < match.stake ? `Requires ${formatCompact(match.stake)} Diamonds` : `Join for ${formatCompact(match.stake)} Diamonds with the same demo pets`} onClick={() => joinMatch(match)}>Join<ArrowRight size={14} /></button> : <span className="match-live-pill"><Radio size={12} />LIVE</span>}
               </div>
             })}</div>
           </> : <div className="history-list">{history.length === 0 ? <div className="empty-history"><History size={32} /><h3>No duels yet</h3><p>Join a bot or create your own duel to see your results here.</p><button onClick={openCreateDuel}><Plus size={14} />Create your first duel</button></div> : history.map((entry) => {

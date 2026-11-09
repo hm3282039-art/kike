@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Database, Dices, ExternalLink, RefreshCw, Search, ShieldCheck, Sparkles, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronLeft, ChevronRight, Database, Dices, ExternalLink, RefreshCw, Search, ShieldCheck, Spade, Sparkles, X } from 'lucide-react'
 import { GemIcon, PawLogo } from './GameArt'
 import { appRoute, assetUrl } from '../lib/appUrl'
 import { PET_SNAPSHOT, PET_SNAPSHOT_AT, PET_SNAPSHOT_SOURCE, localPetImage } from '../data/petSnapshot'
@@ -228,8 +228,9 @@ export default function PetIndex() {
       <header className="pet-index-topbar">
         <a className="dice-brand" href={appRoute('dice')} aria-label="PawPlay Color Dice home"><span className="blue-brand-mark"><PawLogo size={37} /></span><span>paw<span>play</span><small>PS99 TOOLS</small></span></a>
         <nav className="pet-index-nav" aria-label="Main navigation">
-          <a href={appRoute('dice')}><Dices size={15} />Color Dice</a>
-          <a href={appRoute('pets')} className="active" aria-current="page"><BookOpen size={15} />Pet Index</a>
+          <a href={appRoute('dice')}><Dices size={15} /><span>Color Dice</span></a>
+          <a href={appRoute('poker')}><Spade size={15} /><span>Poker</span></a>
+          <a href={appRoute('pets')} className="active" aria-current="page"><BookOpen size={15} /><span>Pet Index</span></a>
         </nav>
         <div className="pet-index-header-actions">
           <span className="index-info-label"><ShieldCheck size={13} />INFO ONLY · NO REAL MONEY</span>

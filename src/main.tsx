@@ -4,6 +4,7 @@ import '@fontsource-variable/inter'
 import '@fontsource-variable/outfit'
 import App from './App'
 import PetIndex from './components/PetIndex'
+import Poker from './components/Poker'
 import { IS_STATIC_BUILD } from './lib/appUrl'
 import './dice-only.css'
 import './dice-polish.css'
@@ -11,6 +12,7 @@ import './pet-variants.css'
 import './pet-index.css'
 import './live-dice.css'
 import './visual-polish.css'
+import './poker.css'
 
 const path = window.location.pathname.replace(/\/+$/, '') || '/'
 
@@ -23,15 +25,15 @@ function Root() {
   }, [])
 
   const staticPage = hash.replace(/^#/, '')
-  const isPetIndex = IS_STATIC_BUILD
-    ? staticPage !== 'dice'
-    : path === '/pets' || (path === '/' && import.meta.env.VITE_INDEX_ROOT === 'true')
+  const page = IS_STATIC_BUILD
+    ? staticPage === 'dice' || staticPage === 'poker' ? staticPage : 'pets'
+    : path === '/poker' ? 'poker' : path === '/pets' || (path === '/' && import.meta.env.VITE_INDEX_ROOT === 'true') ? 'pets' : 'dice'
 
   useEffect(() => {
-    document.title = isPetIndex ? 'PS99 Pet Index — PawPlay' : 'Color Dice Duels — PawPlay'
-  }, [isPetIndex])
+    document.title = page === 'pets' ? 'PS99 Pet Index — PawPlay' : page === 'poker' ? 'Diamond Poker — PawPlay' : 'Color Dice Duels — PawPlay'
+  }, [page])
 
-  return isPetIndex ? <PetIndex /> : <App />
+  return page === 'pets' ? <PetIndex /> : page === 'poker' ? <Poker /> : <App />
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

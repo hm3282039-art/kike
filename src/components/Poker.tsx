@@ -1,0 +1,209 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { BookOpen, Bot, ChevronRight, Coins, Dices, Hand, Plus, RotateCcw, ShieldCheck, Spade, Trophy } from 'lucide-react'
+import { GemIcon, PawLogo } from './GameArt'
+import { appRoute } from '../lib/appUrl'
+import { DIAMOND_REFILL, useDiamondBalance, useStoredState } from '../lib/balance'
+import {
+  applyPokerAction,
+  chooseBotAction,
+  createPokerHand,
+  evaluateHand,
+  type Card,
+  type PokerAction,
+  type PokerGame,
+  type PokerWinner,
+  type Suit,
+} from '../lib/poker'
+
+const compact = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 })
+const formatCompact = (value: number) => compact.format(value)
+const BLIND_LEVELS = [10_000_000, 25_000_000, 50_000_000, 100_000_000, 250_000_000, 500_000_000, 1_000_000_000, 2_500_000_000, 5_000_000_000]
+const BOT_NAMES = ['MikaRolls', 'RemyGG', 'NovaByte', 'SofiaRNG', 'PxlMaya']
+const SUITS: Record<Suit, string> = { spades: '♠', hearts: '♥', diamonds: '♦', clubs: '♣' }
+const RANKS: Record<number, string> = { 14: 'A', 13: 'K', 12: 'Q', 11: 'J' }
+
+type PokerHistoryEntry = {
+  handId: number
+  botName: string
+  winner: PokerWinner
+  pot: number
+  playerCommitted: number
+  playerHand: string
+  botHand: string
+  time: string
+}
+
+function randomBot() {
+  const values = new Uint32Array(1)
+  crypto.getRandomValues(values)
+  return BOT_NAMES[values[0] % BOT_NAMES.length]
+}
+
+function PokerCard({ card, hidden = false, placeholder = false }: { card?: Card; hidden?: boolean; placeholder?: boolean }) {
+  if (placeholder) return <div className="poker-card poker-card-placeholder" aria-hidden="true"><Spade size={20} /></div>
+  if (hidden || !card) return <div className="poker-card poker-card-back" role="img" aria-label="Hidden card"><span><Spade size={22} /></span></div>
+  const label = `${RANKS[card.rank] || card.rank} of ${card.suit}`
+  return (
+    <div className={`poker-card poker-card-face ${card.suit === 'hearts' || card.suit === 'diamonds' ? 'is-red' : ''}`} role="img" aria-label={label}>
+      <strong>{RANKS[card.rank] || card.rank}</strong>
+      <span>{SUITS[card.suit]}</span>
+      <small>{SUITS[card.suit]}</small>
+    </div>
+  )
+}
+
+function winnerLabel(winner: PokerWinner) {
+  return winner === 'player' ? 'Won' : winner === 'bot' ? 'Lost' : 'Split'
+}
+
+export default function Poker() {
+  const [balance, setBalance] = useDiamondBalance()
+  const [game, setGame] = useState<PokerGame | null>(null)
+  const [bigBlind, setBigBlind] = useState(50_000_000)
+  const [notice, setNotice] = useState('Choose a blind level and deal your first Diamonds-only hand.')
+  const [history, setHistory] = useStoredState<PokerHistoryEntry[]>('pawplay-poker-history-v1', [])
+  const nextHandId = useRef(history.reduce((max, entry) => Math.max(max, entry.handId), 0) + 1)
+  const creditedHand = useRef(0)
+
+  const callAmount = game ? Math.max(0, game.currentBet - game.playerRound) : 0
+  const raiseAmount = callAmount + (game?.bigBlind || bigBlind)
+  const playerTurn = Boolean(game && !game.winner && game.turn === 'player')
+  const revealBot = Boolean(game?.winner && !game.folded)
+  const playerEvaluation = useMemo(() => {
+    if (!game || game.community.length < 3) return null
+    return evaluateHand([...game.playerCards, ...game.community])
+  }, [game])
+
+  useEffect(() => {
+    if (!game || game.turn !== 'bot' || game.winner) return
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const timer = window.setTimeout(() => {
+      setGame((current) => {
+        if (!current || current.turn !== 'bot' || current.winner) return current
+        return applyPokerAction(current, 'bot', chooseBotAction(current))
+      })
+    }, reduceMotion ? 120 : 650)
+    return () => window.clearTimeout(timer)
+  }, [game])
+
+  useEffect(() => {
+    if (!game?.winner || creditedHand.current === game.handId) return
+    creditedHand.current = game.handId
+    const payout = game.winner === 'player' ? game.pot : game.winner === 'tie' ? game.pot / 2 : 0
+    if (payout) setBalance((current) => current + payout)
+    setHistory((current) => [{
+      handId: game.handId,
+      botName: game.botName,
+      winner: game.winner!,
+      pot: game.pot,
+      playerCommitted: game.playerCommitted,
+      playerHand: game.playerEvaluation?.label || (game.folded === 'player' ? 'Folded' : 'Not shown'),
+      botHand: game.botEvaluation?.label || (game.folded === 'bot' ? 'Folded' : 'Not shown'),
+      time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+    }, ...current].slice(0, 10))
+  }, [game, setBalance, setHistory])
+
+  const startHand = () => {
+    const dealer = game?.winner ? (game.dealer === 'player' ? 'bot' as const : 'player' as const) : 'player' as const
+    const playerBlind = dealer === 'player' ? bigBlind / 2 : bigBlind
+    if (balance < playerBlind) {
+      setNotice(`You need ${formatCompact(playerBlind)} Diamonds for this blind. Use the free refill or choose a lower level.`)
+      return
+    }
+    setBalance((current) => current - playerBlind)
+    setGame(createPokerHand(nextHandId.current++, bigBlind, dealer, randomBot()))
+    setNotice('')
+  }
+
+  const playerAction = (action: PokerAction) => {
+    if (!game || !playerTurn) return
+    const amount = action === 'call' ? callAmount : action === 'raise' ? raiseAmount : 0
+    if (amount > balance) {
+      setNotice(`This action requires ${formatCompact(amount)} Diamonds. Your available balance is ${formatCompact(balance)}.`)
+      return
+    }
+    if (amount) setBalance((current) => current - amount)
+    setNotice('')
+    setGame((current) => current ? applyPokerAction(current, 'player', action) : current)
+  }
+
+  const refill = () => {
+    setBalance((current) => current + DIAMOND_REFILL)
+    setNotice('25B free fictive Diamonds added to your shared balance.')
+  }
+
+  const net = game?.winner === 'player' ? game.pot - game.playerCommitted : game?.winner === 'bot' ? -game.playerCommitted : 0
+  const currentStage = game?.stage || 'idle'
+
+  return (
+    <div className="poker-app">
+      <header className="dice-topbar poker-topbar">
+        <a className="dice-brand" href={appRoute('dice')} aria-label="PawPlay Color Dice home"><span className="blue-brand-mark"><PawLogo size={37} /></span><span>paw<span>play</span><small>POKER</small></span></a>
+        <nav className="poker-nav" aria-label="Main navigation">
+          <a href={appRoute('dice')}><Dices size={15} />Color Dice</a>
+          <a href={appRoute('poker')} className="active" aria-current="page"><Spade size={15} />Poker</a>
+          <a href={appRoute('pets')}><BookOpen size={15} />Pet Index</a>
+        </nav>
+        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100% FICTIVE</span><span className="version-badge">v1.5.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Fictive Diamonds</small></span><button aria-label="Free Diamonds refill" onClick={refill}><Plus size={16} /></button></div></div>
+      </header>
+
+      <main className="poker-main">
+        <section className="poker-heading">
+          <div className="poker-title-wrap"><span className="poker-title-icon"><Spade size={28} /></span><div><span className="poker-eyebrow">SIMULATED HEADS-UP TABLE</span><h1>Diamond Poker</h1><p>Texas Hold’em against a local bot. <strong>Diamonds only — never pets or RAP.</strong></p></div></div>
+          <div className="poker-format"><span><Bot size={14} />1 bot</span><span><Coins size={14} />Fixed-limit</span><span><ShieldCheck size={14} />Local simulation</span></div>
+        </section>
+
+        <div className="poker-layout">
+          <section className={`poker-table stage-${currentStage}`} aria-label="Texas Hold'em poker table" data-pot={game?.pot || 0} data-player-committed={game?.playerCommitted || 0} data-bot-committed={game?.botCommitted || 0} data-winner={game?.winner || ''} data-stage={currentStage} data-big-blind={game?.bigBlind || bigBlind} data-current-bet={game?.currentBet || 0} data-player-round={game?.playerRound || 0}>
+            <div className="poker-table-rail">
+              <div className="poker-table-felt">
+                <div className="poker-opponent-row">
+                  <div className="poker-seat bot-seat"><span className="poker-bot-avatar"><Bot size={22} /><i /></span><div><strong>{game?.botName || 'PawPlay Bot'}</strong><span>{game?.turn === 'bot' && !game.winner ? 'Thinking…' : 'Simulated opponent'}</span></div></div>
+                  <div className="poker-hole-cards" aria-label="Opponent hole cards">{game ? game.botCards.map((card, index) => <PokerCard key={`${index}-${card.rank}-${card.suit}`} card={card} hidden={!revealBot} />) : <><PokerCard hidden /><PokerCard hidden /></>}</div>
+                  <div className="poker-seat-value"><span>BOT IN POT</span><strong><GemIcon size={14} />{formatCompact(game?.botCommitted || 0)}</strong></div>
+                </div>
+
+                <div className="poker-pot"><span>DIAMONDS POT</span><strong><GemIcon size={22} />{formatCompact(game?.pot || 0)}</strong><small>No pets · no RAP</small></div>
+                <div className="poker-community" aria-label={`Community cards: ${currentStage}`}>{Array.from({ length: 5 }, (_, index) => game?.community[index] ? <PokerCard key={`${index}-${game.community[index].rank}-${game.community[index].suit}`} card={game.community[index]} /> : <PokerCard key={index} placeholder />)}</div>
+                <div className="poker-stages" aria-label="Hand progress">{['preflop', 'flop', 'turn', 'river', 'showdown'].map((stage) => <span key={stage} className={currentStage === stage ? 'active' : ''}>{stage}</span>)}</div>
+
+                <div className="poker-player-row">
+                  <div className="poker-seat"><span className="poker-player-avatar">YOU</span><div><strong>Your hand</strong><span>{game?.dealer === 'player' ? 'Dealer button' : 'Big blind position'}</span></div></div>
+                  <div className="poker-hole-cards player-cards" aria-label="Your hole cards">{game ? game.playerCards.map((card, index) => <PokerCard key={`${index}-${card.rank}-${card.suit}`} card={card} />) : <><PokerCard hidden /><PokerCard hidden /></>}</div>
+                  <div className="poker-seat-value"><span>YOU IN POT</span><strong><GemIcon size={14} />{formatCompact(game?.playerCommitted || 0)}</strong></div>
+                </div>
+
+                {game?.winner && <div className={`poker-result ${game.winner}`} role="status"><span>{game.winner === 'player' ? <Trophy size={21} /> : game.winner === 'tie' ? <Hand size={21} /> : <Bot size={21} />}</span><div><strong>{game.winner === 'player' ? `You win ${formatCompact(game.pot)}` : game.winner === 'bot' ? `${game.botName} wins` : 'Split pot'}</strong><small>{net > 0 ? `+${formatCompact(net)} net Diamonds` : net < 0 ? `−${formatCompact(Math.abs(net))} Diamonds` : 'Your Diamonds contribution is returned'}</small></div></div>}
+              </div>
+            </div>
+            <div className="poker-table-status" aria-live="polite"><span className={game?.turn === 'bot' && !game.winner ? 'thinking' : ''} /><p>{notice || game?.message || 'No hand active.'}</p>{game && !game.winner && <strong>{game.turn === 'player' ? 'Your turn' : 'Bot turn'}</strong>}</div>
+          </section>
+
+          <aside className="poker-controls">
+            <section className="poker-control-card">
+              <div className="poker-control-heading"><span>TABLE LEVEL</span><strong>Big blind</strong></div>
+              <div className="poker-blind-grid">{BLIND_LEVELS.map((amount) => <button key={amount} className={bigBlind === amount ? 'active' : ''} disabled={Boolean(game && !game.winner)} onClick={() => setBigBlind(amount)}><GemIcon size={12} />{formatCompact(amount)}</button>)}</div>
+              <div className="poker-blind-summary"><span>Small blind<strong>{formatCompact(bigBlind / 2)}</strong></span><span>Big blind<strong>{formatCompact(bigBlind)}</strong></span></div>
+            </section>
+
+            <section className="poker-control-card poker-action-card">
+              <div className="poker-control-heading"><span>{game?.winner ? 'HAND COMPLETE' : game ? 'YOUR DECISION' : 'READY TO PLAY'}</span><strong>{game?.winner ? winnerLabel(game.winner) : game ? `${currentStage} · ${formatCompact(callAmount)} to call` : 'Diamonds only'}</strong></div>
+              {playerEvaluation && <div className="poker-hand-strength"><span>Your current best hand</span><strong>{playerEvaluation.label}</strong></div>}
+              {!game || game.winner ? <button className="poker-deal-button" onClick={startHand} disabled={balance < (game?.winner && game.dealer === 'player' ? bigBlind : bigBlind / 2)}><Spade size={18} /><span>{game?.winner ? 'Deal next hand' : 'Deal hand'}</span><ChevronRight size={17} /></button> : <>
+                <div className="poker-actions"><button className="poker-fold" onClick={() => playerAction('fold')} disabled={!playerTurn}>Fold</button><button className="poker-call" onClick={() => playerAction(callAmount ? 'call' : 'check')} disabled={!playerTurn || balance < callAmount}>{callAmount ? `Call ${formatCompact(callAmount)}` : 'Check'}</button></div>
+                <button className="poker-raise" onClick={() => playerAction('raise')} disabled={!playerTurn || game.raises >= 2 || balance < raiseAmount}><span>Raise {game.raises >= 2 ? 'limit reached' : `to ${formatCompact(game.currentBet + game.bigBlind)}`}</span><GemIcon size={15} /></button>
+                {balance < callAmount && <p className="poker-insufficient">Not enough Diamonds to call. Fold this hand or refill for the next one.</p>}
+              </>}
+              <div className="poker-balance-line"><span>Available after actions</span><strong><GemIcon size={14} />{formatCompact(balance)}</strong></div>
+            </section>
+
+            <section className="poker-rules-card"><ShieldCheck size={16} /><div><strong>Fixed-limit heads-up</strong><p>Two raises maximum per street. The bot matches its actions with simulated Diamonds. Only your shared fictive balance is saved.</p></div></section>
+          </aside>
+        </div>
+
+        <section className="poker-history"><div className="poker-history-heading"><span><RotateCcw size={15} />Recent hands</span><small>{history.length} recorded · Diamonds only</small></div>{history.length ? <div className="poker-history-grid">{history.slice(0, 5).map((entry) => <article key={entry.handId} className={entry.winner}><span>{winnerLabel(entry.winner)}</span><div><strong>You vs {entry.botName}</strong><small>{entry.playerHand} · {entry.time}</small></div><strong><GemIcon size={13} />{formatCompact(entry.pot)}</strong></article>)}</div> : <div className="poker-history-empty"><Spade size={20} /><span>No hands yet. Deal a hand to start a Diamonds-only poker round.</span></div>}</section>
+      </main>
+      <footer className="poker-footer"><ShieldCheck size={13} />Local simulated poker · no real players, money, pets, inventory or Roblox trades.</footer>
+    </div>
+  )
+}
