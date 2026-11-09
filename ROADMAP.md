@@ -196,3 +196,13 @@ Les points 1 à 4 de la liste précédente sont implémentés :
 - Contrôles : builds normal/statique, explications moteur, relance forcée avec un seul débit, chronologie, bascule des sons, soldes du poulet, régression poker, responsive 320/390 px et navigation HTMLPreview sur les quatre pages. Les 503 du catalogue sont injectées par le test statique pour vérifier le repli hors ligne.
 
 Le point 5 (confirmation de sortie et reprise après rechargement) reste à faire, hors de cette demande.
+
+## Version 1.6.2 — refonte du plateau Chicken Crossing
+
+- Poulet et véhicules dessinés en SVG local, sans emojis pour les éléments de jeu ou les Diamonds.
+- Routes numérotées, refuges, multiplicateurs, progression sur 12 routes et caméra suivant le poulet sur mobile.
+- Traversée animée vers la voie tentée, puis arrivée au refuge ; collision représentée sur cette voie avec véhicule dédié. Le trafic décoratif de la voie active est masqué pendant la résolution pour ne pas montrer une fausse collision lors d’une réussite.
+- Poste de commande : mise, raccourcis, encaissement disponible, montant de la prochaine route et risque de collision explicite.
+- Résultats distincts, historique des nouvelles pertes avec mise exacte (anciennes données conservées), sons opt-in et reduced-motion.
+- Règles inchangées : Diamonds fictifs uniquement, solde partagé, survie 82 %, multiplicateurs fixes et tirages indépendants ; aucune mécanique de réflexes promise.
+- Vérifications : TypeScript/Vite normal et statique, soldes exacts après collision/encaissement, 12 routes avec paiement automatique final, responsive 320/390/1440 px, navigation statique des quatre pages. Capture desktop inspectée.

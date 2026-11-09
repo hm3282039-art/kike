@@ -149,7 +149,7 @@ export default function Poker() {
           <a href={appRoute('poker')} className="active" aria-current="page"><Spade size={15} />Poker</a>
           <a href={appRoute('chicken')}>🐔 Chicken</a><a href={appRoute('pets')}><BookOpen size={15} />Index des pets</a>
         </nav>
-        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100 % FICTIF</span><span className="version-badge">v1.6.1</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Diamonds fictifs</small></span><button aria-label="Recharge gratuite de Diamonds" onClick={refill}><Plus size={16} /></button></div></div>
+        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100 % FICTIF</span><span className="version-badge">v1.6.2</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Diamonds fictifs</small></span><button aria-label="Recharge gratuite de Diamonds" onClick={refill}><Plus size={16} /></button></div></div>
       </header>
 
       <main className="poker-main">
