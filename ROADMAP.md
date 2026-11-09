@@ -127,7 +127,7 @@ Aucun pet + aucun RAP + aucune valeur d’inventaire
 | **1.3.1** | Correctifs éventuels de la 1.3.0 uniquement. | Aucune. |
 | **1.4.1** | Correctifs éventuels de la 1.4.0 uniquement. | Aucune. |
 | **1.5.1** | Correctifs éventuels de la 1.5.0 uniquement. | Aucune. |
-| **1.6.0 et suivantes** | Non définies. | Aucune nouveauté planifiée ou commencée pour le moment. |
+| **1.7.0 et suivantes** | Améliorations des jeux existants, à prioriser. | Aucune nouveauté promise. |
 
 ## Propositions graphiques restantes — idées non commencées
 
@@ -166,3 +166,21 @@ Aucun travail n'est commencé sur : vrai multijoueur, comptes, serveur distant, 
 - Desktop et mobile, images cassées et débordements horizontaux.
 - Navigation Pet Index ↔ Color Dice sous une simulation de la balise `<base>` HTMLPreview.
 - Vérification du lien public figé au commit publié.
+
+
+## Version 1.6.0 — lisibilité et Chicken Crossing
+
+- Poker : surbrillance des cartes de la combinaison (paire dès les cartes privées, puis meilleure combinaison avec le board) ; kickers neutres. Cartes adverses surlignées seulement après révélation.
+- Color Dice : couleurs adverses sans chevauchement ; égalité relancée automatiquement avec les mêmes couleurs et le même pot, sans nouveau débit ni entrée finale dans l’historique. Même règle pour les duels entre bots.
+- Chicken Crossing : 12 routes, multiplicateurs croissants, encaissement entre les traversées, collision et historique local séparé. Diamonds fictifs uniquement, solde commun.
+- Survie par route 82 %, collision 18 %, tirage crypto indépendant. Multiplicateur = floor(0.96 / 0.82^route × 100) / 100 ; mise incluse dans le paiement. Les voitures sont décoratives et ne constituent pas un signal de timing. Dernière route encaissée automatiquement. Quitter un run abandonne la mise déjà débitée.
+- Plateau nocturne, animations de trafic et saut du poulet, refuges, contraste des actions, mode reduced-motion et mise en page mobile.
+- Vérifications : build TypeScript/Vite, encaissement exact, collision sans double débit, égalité forcée sans nouveau débit, couleurs exclusives, régression poker et responsive 320/390 px.
+
+### Améliorations proposées — sans ajouter de jeux
+
+1. Poker : distinguer visuellement combinaison principale et kickers au showdown, avec explication courte du départage.
+2. Color Dice : afficher un compteur de relances et une chronologie des scores dans le même duel.
+3. Chicken : renforcer le feedback de refuge, collision et encaissement avec sons optionnels, désactivés par défaut.
+4. Tous les jeux : harmoniser la langue française, les boutons, les messages de solde insuffisant et les indications clavier.
+5. Tous les jeux : proposer une confirmation avant de quitter une partie engagée et une reprise fiable après rechargement.

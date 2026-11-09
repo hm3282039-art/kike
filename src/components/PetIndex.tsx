@@ -230,7 +230,7 @@ export default function PetIndex() {
         <nav className="pet-index-nav" aria-label="Main navigation">
           <a href={appRoute('dice')}><Dices size={15} /><span>Color Dice</span></a>
           <a href={appRoute('poker')}><Spade size={15} /><span>Poker</span></a>
-          <a href={appRoute('pets')} className="active" aria-current="page"><BookOpen size={15} /><span>Pet Index</span></a>
+          <a href={appRoute('chicken')}>🐔 Chicken</a><a href={appRoute('pets')} className="active" aria-current="page"><BookOpen size={15} /><span>Pet Index</span></a>
         </nav>
         <div className="pet-index-header-actions">
           <span className="index-info-label"><ShieldCheck size={13} />INFO ONLY · NO REAL MONEY</span>

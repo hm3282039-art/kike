@@ -127,3 +127,5 @@
 .join-duel-button:disabled { opacity: .4; cursor: not-allowed; }
 @media (max-width:600px) { .live-dice-app .dice-game-nav .dice-index-link { width: 34px; padding: 0; justify-content: center; } .live-dice-app .dice-game-nav .dice-index-link > span { display: none; } }
 @media (max-width:520px) { .pet-index-nav a { width: 33px; justify-content: center; padding: 0; } .pet-index-nav a > span { display: none; } }
+
+.poker-card-face.combination-highlight{outline:3px solid #c9f788;outline-offset:3px;box-shadow:0 0 22px #b1f56b88,0 8px 14px #0005;transform:translateY(-5px)}

@@ -162,7 +162,12 @@ function randomColors(): DiceColor[] {
   const second = (first + 1 + randomInt(COLORS.length - 1)) % COLORS.length
   return [COLORS[first].id, COLORS[second].id]
 }
-function chooseBotColors(name: string): DiceColor[] {
+function chooseBotColors(name: string, excluded: DiceColor[] = []): DiceColor[] {
+  if (excluded.length) {
+    const available = COLORS.map(color => color.id).filter(color => !excluded.includes(color))
+    const first = available.splice(randomInt(available.length), 1)[0]
+    return [first, available[randomInt(available.length)]]
+  }
   const bot = BOTS.find((profile) => profile.name === name)
   if (!bot || randomInt(100) < 30) return randomColors()
   const first = bot.favoriteColors[randomInt(2)]
@@ -325,8 +330,9 @@ export default function App() {
           const match = nextMatches.find((item) => item.id === battle.id)
           if (!match) return
           const dice = fourRandomColors()
-          const firstScore = scoreColors(dice, chooseBotColors(match.bot))
-          const secondScore = scoreColors(dice, chooseBotColors(battle.opponent))
+          const firstColors = chooseBotColors(match.bot)
+          const firstScore = scoreColors(dice, firstColors)
+          const secondScore = scoreColors(dice, chooseBotColors(battle.opponent, firstColors))
           const winner = firstScore === secondScore ? null : firstScore > secondScore ? match.bot : battle.opponent
           const pot = getPotValue(match.stake, match.pets)
           if (winner) {
@@ -338,7 +344,9 @@ export default function App() {
               `${winner} beats ${loser} ${scoreLine} · ${formatCompact(pot)} including both pet sets.`,
             ]))
           } else {
-            addActivity('result', `${match.bot} and ${battle.opponent} tied ${firstScore}–${secondScore} · ${formatCompact(pot / 2)} per side refunded 😅`)
+            addActivity('roll', `${match.bot} and ${battle.opponent}: draw — automatic reroll, same pot.`)
+            battlesRef.current.push({ ...battle, resolveAt: now + 1800 })
+            return
           }
           nextMatches = nextMatches.filter((item) => item.id !== battle.id)
         })
@@ -497,18 +505,18 @@ export default function App() {
     })
   }
 
-  const startDuel = () => {
-    if (rolling || selectedColors.length !== 2) return
+  const startDuel = (reroll = false, lockedColors = botColors) => {
+    if ((!reroll && rolling) || selectedColors.length !== 2) return
     if (stake < MIN_STAKE) {
       setToast('The minimum duel stake is 10M fictive Diamonds.')
       return
     }
-    if (stake > balance) {
+    if (!reroll && stake > balance) {
       setToast('Not enough fictive Diamonds — use the free refill.')
       return
     }
 
-    const nextBotColors = chooseBotColors(opponent)
+    const nextBotColors = reroll ? lockedColors : chooseBotColors(opponent, selectedColors)
     const finalDice = fourRandomColors()
     const finalPips = Array.from({ length: 4 }, () => randomInt(6) + 1)
     const playerScore = scoreColors(finalDice, selectedColors)
@@ -519,14 +527,14 @@ export default function App() {
     const matchedPotValue = duelPotValue
     const rollId = `#${Date.now().toString(36).toUpperCase()}`
 
-    setBalance((current) => current - stake)
+    if (!reroll) setBalance((current) => current - stake)
     setRolling(true)
     setResult(null)
     setShowResultOverlay(false)
     setScore(null)
     setBotColors(nextBotColors)
     setLastRollId(rollId)
-    if (selectedMatchRef.current === null) addActivity('roll', `${opponent} accepted your challenge · ${formatCompact(stake)} Diamonds each + the same demo pet set.`)
+    if (!reroll && selectedMatchRef.current === null) addActivity('roll', `${opponent} accepted your challenge · ${formatCompact(stake)} Diamonds each + the same demo pet set.`)
     revealedRef.current = 0
     setRevealedCount(0)
 
@@ -544,6 +552,12 @@ export default function App() {
       if (index === 3) {
         if (rollIntervalRef.current) window.clearInterval(rollIntervalRef.current)
         rollTimeoutsRef.current.push(window.setTimeout(() => {
+          if (duelResult === 'tie') {
+            setScore({ player: playerScore, bot: botScore })
+            setToast('Égalité — relance automatique, même pot, aucun débit supplémentaire.')
+            rollTimeoutsRef.current.push(window.setTimeout(() => startDuel(true, nextBotColors), 1100))
+            return
+          }
           setRolling(false)
           setScore({ player: playerScore, bot: botScore })
           setResult(duelResult)
@@ -571,8 +585,8 @@ export default function App() {
     <div className="dice-app live-dice-app" style={{ '--duel-accent': duelAccent } as React.CSSProperties}>
       <header className="dice-topbar">
         <button className="dice-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><span className="blue-brand-mark"><PawLogo size={37} /></span><span>paw<span>play</span><small>COLOR DICE</small></span></button>
-        <nav className="dice-game-nav" aria-label="Main navigation"><span className="dice-header-game"><Dices size={17} /><span>Color Dice Duels</span></span><a className="dice-index-link poker-index-link" href={appRoute('poker')}><Spade size={15} /><span>Poker</span></a><a className="dice-index-link" href={appRoute('pets')}><BookOpen size={15} /><span>Pet Index</span></a></nav>
-        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100% FICTIVE</span><span className="version-badge">v1.5.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Fictive Diamonds</small></span><button aria-label="Free Diamonds refill" onClick={refill}><Plus size={16} /></button></div></div>
+        <nav className="dice-game-nav" aria-label="Main navigation"><span className="dice-header-game"><Dices size={17} /><span>Color Dice Duels</span></span><a className="dice-index-link poker-index-link" href={appRoute('poker')}><Spade size={15} /><span>Poker</span></a><a className="dice-index-link" href={appRoute('chicken')}>🐔<span>Chicken</span></a><a className="dice-index-link" href={appRoute('pets')}><BookOpen size={15} /><span>Pet Index</span></a></nav>
+        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100% FICTIVE</span><span className="version-badge">v1.6.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Fictive Diamonds</small></span><button aria-label="Free Diamonds refill" onClick={refill}><Plus size={16} /></button></div></div>
       </header>
 
       <main className="dice-main live-dice-main">
@@ -634,16 +648,16 @@ export default function App() {
             <div className="duel-arena-column">
               <div className="arena-player-row"><div className="arena-player"><span className="arena-avatar tier-huge"><img src={assetUrl('images/pets/huge-amethyst-dragon.png')} alt="Your PS99 pet" /></span><div><span>YOU</span><div className="arena-color-dots">{selectedColors.map((color) => <i key={color} className={`color-dot-${color}`} />)}</div></div><strong>{score?.player ?? '–'}</strong></div><span className="arena-vs">VS</span><div className="arena-player opponent"><strong>{score?.bot ?? '–'}</strong><div><span>{opponent.toUpperCase()}</span><div className="arena-color-dots">{botColors.length ? botColors.map((color) => <i key={color} className={`color-dot-${color}`} />) : <small>? &nbsp; ?</small>}</div></div><span className={`arena-avatar tier-${PET_CATALOG[opponentPet].tier.toLowerCase()}`}><img src={assetUrl(`images/pets/${opponentPet}.png`)} alt={`${PET_CATALOG[opponentPet].variant} ${PET_CATALOG[opponentPet].name}`} /><i /></span></div></div>
               <div className="match-pets modal-duel-pets">{duelPets.map((pet) => <PetThumbnail key={pet} petId={pet} />)}<span>Each side deposits this demo pet set · RAP {formatCompact(duelPetValue)}</span></div>
-              <div className={`dice-arena modal-dice-arena ${rolling ? 'is-rolling' : ''}`}><div className="dice-results">{dice.map((color, index) => <ColorDie key={index} color={color} value={pips[index]} index={index} rolling={rolling && index >= revealedCount} playerColors={selectedColors} botColors={botColors} />)}</div><div className="arena-status"><span className="online-dot" />{rolling ? `Rolling dice · ${revealedCount}/4 revealed` : result ? 'Duel complete — check the result below' : 'Most matching colors wins the pot'}</div></div>
+              <div className={`dice-arena modal-dice-arena ${rolling ? 'is-rolling' : ''}`}><div className="dice-results">{dice.map((color, index) => <ColorDie key={index} color={color} value={pips[index]} index={index} rolling={rolling && index >= revealedCount} playerColors={selectedColors} botColors={botColors} />)}</div><div className="arena-status"><span className="online-dot" />{rolling ? `Rolling dice · ${revealedCount}/4 revealed` : result ? 'Duel complete — check the result below' : 'Exclusive colors · ties reroll free'}</div></div>
               {result && <div className={`duel-result-banner ${result}`}><Trophy size={23} /><div><strong>{result === 'win' ? `Victory · ${formatCompact(duelPotValue)} pot` : result === 'lose' ? `Defeat · ${formatCompact(duelSideValue)} side lost` : 'Draw · both sides refunded'}</strong><span>Final score {score?.player}–{score?.bot} · {result === 'win' ? `${formatCompact(stake * 2)} Diamonds + ${duelPets.length * 2} pets won` : result === 'tie' ? `${formatCompact(stake)} Diamonds + your ${duelPets.length} pets returned` : `${formatCompact(stake)} Diamonds + your ${duelPets.length} pets lost`}</span></div></div>}
             </div>
 
             <div className="duel-setup-column">
-              <div className="color-pick-section"><div className="stake-heading"><label>Pick your 2 colors</label><span>{selectedColors.length}/2</span></div><div className="color-picker">{COLORS.map((color) => <button key={color.id} className={`color-option ${selectedColors.includes(color.id) ? 'selected' : ''} ${rolling ? 'disabled' : ''}`} onClick={() => toggleColor(color.id)} disabled={rolling}><span className={`color-dot-${color.id}`} />{color.label}{selectedColors.includes(color.id) && <small>{selectedColors.indexOf(color.id) + 1}</small>}</button>)}</div></div>
+              <div className="color-pick-section"><div className="stake-heading"><label>Pick 2 exclusive colors</label><span>{selectedColors.length}/2</span></div><div className="color-picker">{COLORS.map((color) => <button key={color.id} className={`color-option ${selectedColors.includes(color.id) ? 'selected' : ''} ${rolling ? 'disabled' : ''}`} onClick={() => toggleColor(color.id)} disabled={rolling}><span className={`color-dot-${color.id}`} />{color.label}{selectedColors.includes(color.id) && <small>{selectedColors.indexOf(color.id) + 1}</small>}</button>)}</div></div>
               <div className="stake-section"><div className="stake-heading"><label htmlFor="stake-input">Your Diamonds</label><span>Total pot <strong><GemIcon size={14} />{formatCompact(duelPotValue)}</strong></span></div><div className="stake-input"><GemIcon size={23} /><input id="stake-input" type="text" inputMode="decimal" value={stakeInput} disabled={rolling} onChange={(event) => { setStakeInput(event.target.value); parseStake(event.target.value) }} onBlur={() => changeStake(stake)} aria-describedby="stake-help" /><button disabled={rolling} onClick={() => changeStake(Math.max(MIN_STAKE, Math.floor(stake / 2)))}>½</button><button disabled={rolling} onClick={() => changeStake(stake * 2)}>2×</button><button disabled={rolling} onClick={() => changeStake(balance)}>MAX</button></div><div className="stake-help" id="stake-help">Diamonds only · minimum 10M · balance {formatCompact(balance)}</div><div className="quick-stakes">{QUICK_STAKES.map((amount) => <button key={amount} disabled={rolling || balance < amount} className={stake === amount ? 'active' : ''} onClick={() => changeStake(amount)}><GemIcon size={12} />{formatCompact(amount)}</button>)}</div></div>
               <div className="matched-wager-card"><div className="matched-wager-head"><span><ShieldCheck size={13} />Matched value per side</span><strong>{formatCompact(duelSideValue)}</strong></div><div className="matched-wager-parts"><span><GemIcon size={15} />{formatCompact(stake)}<small>Diamonds</small></span><Plus size={12} /><span><Sparkles size={14} />{formatCompact(duelPetValue)}<small>Pet RAP</small></span></div><p>{opponent} mirrors the same Diamonds and the same {duelPets.length}-pet demo set. The winner receives both sets.</p></div>
               <div className="opponent-note"><Bot size={17} /><div><strong>{opponent}<span className="opponent-live-state">{rolling ? 'rolling…' : 'online'}</span></strong><span>{rolling ? 'Both offers locked. Watching the dice…' : `${opponentProfile?.style || 'friendly'} player · likes ${opponentProfile?.favoriteColors.map((color) => COLORS.find((item) => item.id === color)?.label).join(' + ') || 'surprise colors'}.`}</span></div></div>
-              <button className="roll-dice-button" disabled={rolling || selectedColors.length !== 2 || stake < MIN_STAKE || stake > balance} onClick={startDuel}><Dices size={20} /><span>{rolling ? 'Rolling Dice…' : result ? 'Roll Again' : 'Roll 4 Dice'}</span><span className="roll-pot"><GemIcon size={17} />{formatCompact(duelPotValue)}</span></button>
+              <button className="roll-dice-button" disabled={rolling || selectedColors.length !== 2 || stake < MIN_STAKE || stake > balance} onClick={() => startDuel()}><Dices size={20} /><span>{rolling ? 'Rolling Dice…' : result ? 'Roll Again' : 'Roll 4 Dice'}</span><span className="roll-pot"><GemIcon size={17} />{formatCompact(duelPotValue)}</span></button>
               {stake < MIN_STAKE && <span className="stake-error">Enter at least 10M to start this duel.</span>}
               <p className="random-local-note"><ShieldCheck size={12} />Matched demo pets per duel · no real currency, inventory or players.</p>
             </div>
@@ -663,7 +677,7 @@ export default function App() {
         </section>
       </div>}
 
-      {infoModal && <div className="info-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setInfoModal(null) }}><section className="info-modal" role="dialog" aria-modal="true" aria-labelledby="info-title"><button className="info-close" aria-label="Close" onClick={() => setInfoModal(null)}><X size={19} /></button><span className="info-modal-icon">{infoModal === 'how' ? <Dices size={27} /> : <ShieldCheck size={27} />}</span><h2 id="info-title">{infoModal === 'how' ? 'How Color Dice Works' : 'Verify the Outcome'}</h2>{infoModal === 'how' ? <><p>Each player picks <strong>2 of the 6 colors</strong>. Four colored dice are rolled and each matching die gives one point.</p><ol><li>Join a waiting bot or use the small Create Duel button.</li><li>Choose at least 10M fictive Diamonds and review the matched pet set.</li><li>Both sides deposit the same Diamonds and the same 3-pet demo set. Total value = 2 × (Diamonds + pet RAP).</li><li>The highest score wins both offers; a tie refunds everything.</li></ol><p>Demo pet sets are supplied for each local duel, not stored as a Roblox inventory. Bots also chat, accept and finish their own games at varied speeds. Everyone is simulated locally.</p></> : <><p>This local demo uses <strong>crypto.getRandomValues()</strong> for every die, pip and bot decision.</p><div className="verification-box"><span>ROLL ID</span><strong>{lastRollId || 'No roll yet'}</strong><span>YOUR COLORS</span><strong>{selectedColors.map((color) => COLORS.find((item) => item.id === color)?.label).join(' + ')}</strong><span>BOT COLORS</span><strong>{botColors.length ? botColors.map((color) => COLORS.find((item) => item.id === color)?.label).join(' + ') : 'Hidden until the duel'}</strong><span>LATEST SCORE</span><strong>{score ? `${score.player}–${score.bot}` : 'No roll yet'}</strong></div><p>There is no real server, wager, blockchain seed or Roblox inventory.</p></>}<button className="info-got-it" onClick={() => setInfoModal(null)}>Got it<Check size={15} /></button></section></div>}
+      {infoModal && <div className="info-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setInfoModal(null) }}><section className="info-modal" role="dialog" aria-modal="true" aria-labelledby="info-title"><button className="info-close" aria-label="Close" onClick={() => setInfoModal(null)}><X size={19} /></button><span className="info-modal-icon">{infoModal === 'how' ? <Dices size={27} /> : <ShieldCheck size={27} />}</span><h2 id="info-title">{infoModal === 'how' ? 'How Color Dice Works' : 'Verify the Outcome'}</h2>{infoModal === 'how' ? <><p>Each player picks <strong>2 of the 6 colors</strong>. Four colored dice are rolled and each matching die gives one point.</p><ol><li>Join a waiting bot or use the small Create Duel button.</li><li>Choose at least 10M fictive Diamonds and review the matched pet set.</li><li>Both sides deposit the same Diamonds and the same 3-pet demo set. Total value = 2 × (Diamonds + pet RAP).</li><li>The highest score wins both offers; a tie automatically rerolls the same pot without another debit. Colors cannot overlap.</li></ol><p>Demo pet sets are supplied for each local duel, not stored as a Roblox inventory. Bots also chat, accept and finish their own games at varied speeds. Everyone is simulated locally.</p></> : <><p>This local demo uses <strong>crypto.getRandomValues()</strong> for every die, pip and bot decision.</p><div className="verification-box"><span>ROLL ID</span><strong>{lastRollId || 'No roll yet'}</strong><span>YOUR COLORS</span><strong>{selectedColors.map((color) => COLORS.find((item) => item.id === color)?.label).join(' + ')}</strong><span>BOT COLORS</span><strong>{botColors.length ? botColors.map((color) => COLORS.find((item) => item.id === color)?.label).join(' + ') : 'Hidden until the duel'}</strong><span>LATEST SCORE</span><strong>{score ? `${score.player}–${score.bot}` : 'No roll yet'}</strong></div><p>There is no real server, wager, blockchain seed or Roblox inventory.</p></>}<button className="info-got-it" onClick={() => setInfoModal(null)}>Got it<Check size={15} /></button></section></div>}
       {toast && <div className="dice-toast" role="status">{toast}</div>}
     </div>
   )

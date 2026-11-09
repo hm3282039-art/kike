@@ -4,6 +4,7 @@ import { GemIcon, PawLogo } from './GameArt'
 import { appRoute } from '../lib/appUrl'
 import { DIAMOND_REFILL, useDiamondBalance, useStoredState } from '../lib/balance'
 import {
+  combinationCards,
   applyPokerAction,
   chooseBotAction,
   createPokerHand,
@@ -39,12 +40,12 @@ function randomBot() {
   return BOT_NAMES[values[0] % BOT_NAMES.length]
 }
 
-function PokerCard({ card, hidden = false, placeholder = false }: { card?: Card; hidden?: boolean; placeholder?: boolean }) {
+function PokerCard({ card, hidden = false, placeholder = false, highlighted = false }: { card?: Card; hidden?: boolean; placeholder?: boolean; highlighted?: boolean }) {
   if (placeholder) return <div className="poker-card poker-card-placeholder" aria-hidden="true"><Spade size={20} /></div>
   if (hidden || !card) return <div className="poker-card poker-card-back" role="img" aria-label="Hidden card"><span><Spade size={22} /></span></div>
   const label = `${RANKS[card.rank] || card.rank} of ${card.suit}`
   return (
-    <div className={`poker-card poker-card-face ${card.suit === 'hearts' || card.suit === 'diamonds' ? 'is-red' : ''}`} role="img" aria-label={label}>
+    <div className={`poker-card poker-card-face ${highlighted ? 'combination-highlight' : ''} ${card.suit === 'hearts' || card.suit === 'diamonds' ? 'is-red' : ''}`} role="img" aria-label={`${label}${highlighted ? ' · combination' : ''}`}>
       <strong>{RANKS[card.rank] || card.rank}</strong>
       <span>{SUITS[card.suit]}</span>
       <small>{SUITS[card.suit]}</small>
@@ -65,6 +66,8 @@ export default function Poker() {
   const nextHandId = useRef(history.reduce((max, entry) => Math.max(max, entry.handId), 0) + 1)
   const creditedHand = useRef(0)
 
+  const highlightedCards = game ? combinationCards([...game.playerCards, ...game.community]) : []
+  const isHighlighted = (card: Card) => highlightedCards.some(item => item.rank === card.rank && item.suit === card.suit)
   const callAmount = game ? Math.max(0, game.currentBet - game.playerRound) : 0
   const raiseAmount = callAmount + (game?.bigBlind || bigBlind)
   const playerTurn = Boolean(game && !game.winner && game.turn === 'player')
@@ -142,9 +145,9 @@ export default function Poker() {
         <nav className="poker-nav" aria-label="Main navigation">
           <a href={appRoute('dice')}><Dices size={15} />Color Dice</a>
           <a href={appRoute('poker')} className="active" aria-current="page"><Spade size={15} />Poker</a>
-          <a href={appRoute('pets')}><BookOpen size={15} />Pet Index</a>
+          <a href={appRoute('chicken')}>🐔 Chicken</a><a href={appRoute('pets')}><BookOpen size={15} />Pet Index</a>
         </nav>
-        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100% FICTIVE</span><span className="version-badge">v1.5.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Fictive Diamonds</small></span><button aria-label="Free Diamonds refill" onClick={refill}><Plus size={16} /></button></div></div>
+        <div className="dice-header-right"><span className="demo-label"><ShieldCheck size={14} />100% FICTIVE</span><span className="version-badge">v1.6.0</span><div className="gems-balance"><GemIcon size={24} /><span><strong>{formatCompact(balance)}</strong><small>Fictive Diamonds</small></span><button aria-label="Free Diamonds refill" onClick={refill}><Plus size={16} /></button></div></div>
       </header>
 
       <main className="poker-main">
@@ -159,17 +162,17 @@ export default function Poker() {
               <div className="poker-table-felt">
                 <div className="poker-opponent-row">
                   <div className="poker-seat bot-seat"><span className="poker-bot-avatar"><Bot size={22} /><i /></span><div><strong>{game?.botName || 'PawPlay Bot'}</strong><span>{game?.turn === 'bot' && !game.winner ? 'Thinking…' : 'Simulated opponent'}</span></div></div>
-                  <div className="poker-hole-cards" aria-label="Opponent hole cards">{game ? game.botCards.map((card, index) => <PokerCard key={`${index}-${card.rank}-${card.suit}`} card={card} hidden={!revealBot} />) : <><PokerCard hidden /><PokerCard hidden /></>}</div>
+                  <div className="poker-hole-cards" aria-label="Opponent hole cards">{game ? game.botCards.map((card, index) => <PokerCard key={`${index}-${card.rank}-${card.suit}`} card={card} hidden={!revealBot} highlighted={revealBot && Boolean(game.botEvaluation && combinationCards([...game.botCards, ...game.community]).some(item => item.rank === card.rank && item.suit === card.suit))} />) : <><PokerCard hidden /><PokerCard hidden /></>}</div>
                   <div className="poker-seat-value"><span>BOT IN POT</span><strong><GemIcon size={14} />{formatCompact(game?.botCommitted || 0)}</strong></div>
                 </div>
 
                 <div className="poker-pot"><span>DIAMONDS POT</span><strong><GemIcon size={22} />{formatCompact(game?.pot || 0)}</strong><small>No pets · no RAP</small></div>
-                <div className="poker-community" aria-label={`Community cards: ${currentStage}`}>{Array.from({ length: 5 }, (_, index) => game?.community[index] ? <PokerCard key={`${index}-${game.community[index].rank}-${game.community[index].suit}`} card={game.community[index]} /> : <PokerCard key={index} placeholder />)}</div>
+                <div className="poker-community" aria-label={`Community cards: ${currentStage}`}>{Array.from({ length: 5 }, (_, index) => game?.community[index] ? <PokerCard key={`${index}-${game.community[index].rank}-${game.community[index].suit}`} card={game.community[index]} highlighted={isHighlighted(game.community[index])} /> : <PokerCard key={index} placeholder />)}</div>
                 <div className="poker-stages" aria-label="Hand progress">{['preflop', 'flop', 'turn', 'river', 'showdown'].map((stage) => <span key={stage} className={currentStage === stage ? 'active' : ''}>{stage}</span>)}</div>
 
                 <div className="poker-player-row">
                   <div className="poker-seat"><span className="poker-player-avatar">YOU</span><div><strong>Your hand</strong><span>{game?.dealer === 'player' ? 'Dealer button' : 'Big blind position'}</span></div></div>
-                  <div className="poker-hole-cards player-cards" aria-label="Your hole cards">{game ? game.playerCards.map((card, index) => <PokerCard key={`${index}-${card.rank}-${card.suit}`} card={card} />) : <><PokerCard hidden /><PokerCard hidden /></>}</div>
+                  <div className="poker-hole-cards player-cards" aria-label="Your hole cards">{game ? game.playerCards.map((card, index) => <PokerCard key={`${index}-${card.rank}-${card.suit}`} card={card} highlighted={isHighlighted(card)} />) : <><PokerCard hidden /><PokerCard hidden /></>}</div>
                   <div className="poker-seat-value"><span>YOU IN POT</span><strong><GemIcon size={14} />{formatCompact(game?.playerCommitted || 0)}</strong></div>
                 </div>
 
@@ -188,7 +191,8 @@ export default function Poker() {
 
             <section className="poker-control-card poker-action-card">
               <div className="poker-control-heading"><span>{game?.winner ? 'HAND COMPLETE' : game ? 'YOUR DECISION' : 'READY TO PLAY'}</span><strong>{game?.winner ? winnerLabel(game.winner) : game ? `${currentStage} · ${formatCompact(callAmount)} to call` : 'Diamonds only'}</strong></div>
-              {playerEvaluation && <div className="poker-hand-strength"><span>Your current best hand</span><strong>{playerEvaluation.label}</strong></div>}
+              {!playerEvaluation && highlightedCards.length > 0 && <div className="poker-hand-strength"><span>Your current hand</span><strong>Pair · highlighted cards</strong></div>}
+              {playerEvaluation && <div className="poker-hand-strength"><span>Your current best hand</span><strong>{playerEvaluation.label} · highlighted cards</strong></div>}
               {!game || game.winner ? <button className="poker-deal-button" onClick={startHand} disabled={balance < (game?.winner && game.dealer === 'player' ? bigBlind : bigBlind / 2)}><Spade size={18} /><span>{game?.winner ? 'Deal next hand' : 'Deal hand'}</span><ChevronRight size={17} /></button> : <>
                 <div className="poker-actions"><button className="poker-fold" onClick={() => playerAction('fold')} disabled={!playerTurn}>Fold</button><button className="poker-call" onClick={() => playerAction(callAmount ? 'call' : 'check')} disabled={!playerTurn || balance < callAmount}>{callAmount ? `Call ${formatCompact(callAmount)}` : 'Check'}</button></div>
                 <button className="poker-raise" onClick={() => playerAction('raise')} disabled={!playerTurn || game.raises >= 2 || balance < raiseAmount}><span>Raise {game.raises >= 2 ? 'limit reached' : `to ${formatCompact(game.currentBet + game.bigBlind)}`}</span><GemIcon size={15} /></button>

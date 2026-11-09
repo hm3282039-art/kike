@@ -269,3 +269,14 @@ export function chooseBotAction(game: PokerGame): PokerAction {
   if (canRaise && (equity > 0.64 || random < 0.09)) return 'raise'
   return 'check'
 }
+
+// Only the combination itself glows; kickers stay neutral for readable hands.
+export function combinationCards(cards: Card[]): Card[] {
+  if (cards.length < 5) return cards.filter(card => cards.filter(other => other.rank === card.rank).length > 1)
+  const best = evaluateHand(cards)
+  const category = best.score[0]
+  if (!category) return []
+  if ([4, 5, 6, 8].includes(category)) return best.cards
+  const ranks = category === 2 ? best.score.slice(1, 3) : [best.score[1]]
+  return best.cards.filter(card => ranks.includes(card.rank))
+}
