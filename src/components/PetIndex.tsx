@@ -22,18 +22,18 @@ type SortMode = 'rap-desc' | 'rap-asc' | 'exists-desc' | 'name'
 
 const PAGE_SIZE = 48
 const tierFilters: { id: TierFilter; label: string }[] = [
-  { id: 'All', label: 'All pets' },
+  { id: 'All', label: 'Tous les pets' },
   { id: 'Gargantuan', label: 'Gargantuan' },
   { id: 'Titanic', label: 'Titanic' },
   { id: 'Huge', label: 'Huge' },
-  { id: 'Other', label: 'Other pets' },
+  { id: 'Other', label: 'Autres pets' },
 ]
 const variants: PetVariant[] = ['Regular', 'Golden', 'Rainbow', 'Shiny', 'Shiny Golden', 'Shiny Rainbow']
 
 const compactNumber = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 })
 const fullNumber = new Intl.NumberFormat('en-US')
 const formatCompact = (value: number) => compactNumber.format(value)
-const formatTime = (timestamp: number) => new Intl.DateTimeFormat('en-GB', {
+const formatTime = (timestamp: number) => new Intl.DateTimeFormat('fr-FR', {
   day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
 }).format(new Date(timestamp))
 
@@ -91,16 +91,16 @@ function PetCard({ entry, allowRemote, order }: { entry: PetIndexEntry; allowRem
         <span>{entry.variant} · Pet Simulator 99</span>
       </div>
       <div className="pet-index-rap">
-        <div className="pet-value-label"><span>RAP</span><small>Recent Average Price</small></div>
+        <div className="pet-value-label"><span>RAP</span><small>Prix moyen récent</small></div>
         {entry.rap !== null ? <>
           <strong title={`${fullNumber.format(entry.rap)} Diamonds`}><GemIcon size={20} />{formatCompact(entry.rap)}</strong>
           <small>{fullNumber.format(entry.rap)} Diamonds</small>
-        </> : <div className="pet-value-unavailable"><strong>—</strong><small>No official RAP yet</small></div>}
+        </> : <div className="pet-value-unavailable"><strong>—</strong><small>RAP officiel absent</small></div>}
       </div>
       <div className="pet-index-exists">
-        <span>Exists</span>
-        <strong title={entry.exists !== null ? `${fullNumber.format(entry.exists)} reported copies` : 'Exist count unavailable'}>
-          {entry.exists !== null ? fullNumber.format(entry.exists) : 'Unavailable'}
+        <span>Exemplaires</span>
+        <strong title={entry.exists !== null ? `${fullNumber.format(entry.exists)} exemplaires recensés` : 'Quantité indisponible'}>
+          {entry.exists !== null ? fullNumber.format(entry.exists) : 'Indisponible'}
         </strong>
       </div>
     </article>
@@ -159,12 +159,12 @@ export default function PetIndex() {
           setEntries(PET_SNAPSHOT)
           setLoadedAt(PET_SNAPSHOT_AT)
           setMode('snapshot')
-          setError('Live API unavailable. Showing the limited, dated offline snapshot.')
+          setError('API indisponible. Affichage d’un aperçu hors ligne limité et daté.')
         } else {
           setError('Refresh failed. The last successfully loaded data is still displayed.')
         }
         if (requestError instanceof DOMException && requestError.name === 'AbortError') {
-          setError('The official API timed out. Check your connection and retry.')
+          setError('Délai API dépassé. Vérifie ta connexion et réessaie.')
         }
       } finally {
         window.clearTimeout(timeout)
@@ -220,22 +220,22 @@ export default function PetIndex() {
     gridRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
   }
 
-  const modeLabel = mode === 'live' ? 'LIVE OFFICIAL DATA' : mode === 'cache' ? 'SAVED OFFICIAL DATA' : mode === 'snapshot' ? 'OFFLINE SNAPSHOT' : 'CONNECTING TO BIG GAMES'
+  const modeLabel = mode === 'live' ? 'DONNÉES OFFICIELLES EN DIRECT' : mode === 'cache' ? 'DONNÉES OFFICIELLES EN CACHE' : mode === 'snapshot' ? 'APERÇU HORS LIGNE' : 'CONNEXION À BIG GAMES'
   const sourceUrl = mode === 'snapshot' ? PET_SNAPSHOT_SOURCE : PS99_API_DOCS
 
   return (
     <div className="pet-index-app">
       <header className="pet-index-topbar">
         <a className="dice-brand" href={appRoute('dice')} aria-label="PawPlay Color Dice home"><span className="blue-brand-mark"><PawLogo size={37} /></span><span>paw<span>play</span><small>PS99 TOOLS</small></span></a>
-        <nav className="pet-index-nav" aria-label="Main navigation">
+        <nav className="pet-index-nav" aria-label="Navigation principale">
           <a href={appRoute('dice')}><Dices size={15} /><span>Color Dice</span></a>
           <a href={appRoute('poker')}><Spade size={15} /><span>Poker</span></a>
-          <a href={appRoute('chicken')}>🐔 Chicken</a><a href={appRoute('pets')} className="active" aria-current="page"><BookOpen size={15} /><span>Pet Index</span></a>
+          <a href={appRoute('chicken')}>🐔 Chicken</a><a href={appRoute('pets')} className="active" aria-current="page"><BookOpen size={15} /><span>Index des pets</span></a>
         </nav>
         <div className="pet-index-header-actions">
-          <span className="index-info-label"><ShieldCheck size={13} />INFO ONLY · NO REAL MONEY</span>
+          <span className="index-info-label"><ShieldCheck size={13} />INFORMATION · AUCUN ARGENT RÉEL</span>
           <button className="index-refresh-button" onClick={() => setReloadToken((current) => current + 1)} disabled={loading}>
-            <RefreshCw size={14} className={loading ? 'spinning' : ''} /><span>{loading ? 'Syncing…' : 'Refresh'}</span>
+            <RefreshCw size={14} className={loading ? 'spinning' : ''} /><span>{loading ? 'Synchronisation…' : 'Actualiser'}</span>
           </button>
         </div>
       </header>
@@ -244,52 +244,52 @@ export default function PetIndex() {
         <section className="pet-index-hero">
           <div className="pet-index-title-wrap">
             <span className="pet-index-book"><BookOpen size={27} /></span>
-            <div><span className="pet-index-eyebrow">BIG GAMES PUBLIC API</span><h1>PS99 Pet Index</h1><p>Real RAP in Diamonds and exist counts for every tracked pet variant.</p></div>
+            <div><span className="pet-index-eyebrow">API PUBLIQUE BIG GAMES</span><h1>Index des pets PS99</h1><p>RAP en Diamonds et exemplaires existants pour chaque variante suivie.</p></div>
           </div>
           <a className={`index-data-source mode-${mode}`} href={sourceUrl} target="_blank" rel="noreferrer">
-            <span className="source-status-dot" /><span><strong>{modeLabel}</strong><small>{loadedAt ? `Updated ${formatTime(loadedAt)}` : 'Loading Pets, RAP and Exists…'}</small></span><ExternalLink size={14} />
+            <span className="source-status-dot" /><span><strong>{modeLabel}</strong><small>{loadedAt ? `Mis à jour ${formatTime(loadedAt)}` : 'Chargement des pets, RAP et quantités…'}</small></span><ExternalLink size={14} />
           </a>
         </section>
 
         <section className="pet-index-stats" aria-label="Index statistics">
-          <div><span className="index-stat-icon blue"><Database size={18} /></span><span>Base pets<strong>{baseCount || '—'}</strong></span></div>
-          <div><span className="index-stat-icon purple"><Sparkles size={18} /></span><span>Tracked variants<strong>{entries.length || '—'}</strong></span></div>
-          <div><span className="index-stat-icon cyan"><GemIcon size={21} /></span><span>Variants with RAP<strong>{pricedCount || '—'}</strong></span></div>
-          <p><Check size={12} />No invented prices · Missing RAP stays blank</p>
+          <div><span className="index-stat-icon blue"><Database size={18} /></span><span>Pets de base<strong>{baseCount || '—'}</strong></span></div>
+          <div><span className="index-stat-icon purple"><Sparkles size={18} /></span><span>Variantes suivies<strong>{entries.length || '—'}</strong></span></div>
+          <div><span className="index-stat-icon cyan"><GemIcon size={21} /></span><span>Variantes avec RAP<strong>{pricedCount || '—'}</strong></span></div>
+          <p><Check size={12} />Aucun prix inventé · RAP absent laissé vide</p>
         </section>
 
         {(error || mode === 'snapshot') && <div className={`index-notice ${error ? 'warning' : ''}`} role="status">
-          <Database size={15} /><span>{error || 'Showing a limited offline snapshot.'}</span>
-          {mode === 'snapshot' && <small>{baseCount} base pets / {entries.length} tracked variants · Refresh for the complete live catalog.</small>}
+          <Database size={15} /><span>{error || 'Aperçu hors ligne limité.'}</span>
+          {mode === 'snapshot' && <small>{baseCount} pets de base / {entries.length} variantes suivies · Actualise pour obtenir le catalogue complet.</small>}
         </div>}
 
         <section className="pet-index-filters" aria-label="Pet filters">
-          <div className="pet-search-box"><Search size={17} /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a pet or variant…" aria-label="Search pets" />{query && <button onClick={() => setQuery('')} aria-label="Clear search"><X size={14} /></button>}</div>
+          <div className="pet-search-box"><Search size={17} /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher un pet ou une variante…" aria-label="Rechercher des pets" />{query && <button onClick={() => setQuery('')} aria-label="Effacer la recherche"><X size={14} /></button>}</div>
           <div className="pet-tier-filters" role="group" aria-label="Filter by tier">
             {tierFilters.map((filter) => <button key={filter.id} className={tier === filter.id ? 'active' : ''} onClick={() => setTier(filter.id)} aria-pressed={tier === filter.id}>{filter.label}</button>)}
           </div>
           <div className="pet-select-filters">
-            <label>Variant<select value={variant} onChange={(event) => setVariant(event.target.value as VariantFilter)}><option value="All">All variants</option>{variants.map((item) => <option key={item}>{item}</option>)}</select></label>
-            <label>Sort by<select value={sort} onChange={(event) => setSort(event.target.value as SortMode)}><option value="rap-desc">RAP: high to low</option><option value="rap-asc">RAP: low to high</option><option value="exists-desc">Exists: high to low</option><option value="name">Name: A–Z</option></select></label>
-            {filtersActive && <button className="reset-pet-filters" onClick={resetFilters}><X size={13} />Reset</button>}
+            <label>Variante<select value={variant} onChange={(event) => setVariant(event.target.value as VariantFilter)}><option value="All">Toutes les variantes</option>{variants.map((item) => <option key={item}>{item}</option>)}</select></label>
+            <label>Trier par<select value={sort} onChange={(event) => setSort(event.target.value as SortMode)}><option value="rap-desc">RAP : décroissant</option><option value="rap-asc">RAP : croissant</option><option value="exists-desc">Quantité : décroissante</option><option value="name">Nom : A–Z</option></select></label>
+            {filtersActive && <button className="reset-pet-filters" onClick={resetFilters}><X size={13} />Réinitialiser</button>}
           </div>
         </section>
 
         <section className="pet-index-results" ref={gridRef} aria-live="polite" aria-busy={loading && entries.length === 0}>
-          <div className="pet-results-heading"><div><h2>{tier === 'All' ? 'All pets' : tier === 'Other' ? 'Other pets' : `${tier} pets`}</h2><p>{filtered.length.toLocaleString('en-US')} {filtered.length === 1 ? 'variant' : 'variants'} found{query ? ` for “${query}”` : ''}</p></div><span>{PAGE_SIZE} per page</span></div>
+          <div className="pet-results-heading"><div><h2>{tier === 'All' ? 'Tous les pets' : tier === 'Other' ? 'Autres pets' : `${tier} pets`}</h2><p>{filtered.length.toLocaleString('en-US')} {filtered.length === 1 ? 'variant' : 'variants'} trouvée(s){query ? ` pour «${query} »` : ''}</p></div><span>{PAGE_SIZE} par page</span></div>
 
           {loading && entries.length === 0 ? <div className="pet-index-grid pet-grid-animated is-loading" aria-label="Loading pet artworks, RAP and exist counts">{Array.from({ length: 12 }, (_, index) => <div className="pet-index-card pet-card-skeleton" key={index} aria-hidden="true"><span className="skeleton-badges" /><div className="skeleton-art"><i /></div><span className="skeleton-name" /><strong className="skeleton-value" /><small className="skeleton-exists" /></div>)}</div> : visible.length ? <>
             <div className="pet-index-grid pet-grid-animated" key={`${query}-${tier}-${variant}-${sort}-${safePage}-${mode}`}>{visible.map((entry, index) => <PetCard key={entry.key} entry={entry} allowRemote={mode !== 'snapshot'} order={index} />)}</div>
             <nav className="pet-pagination" aria-label="Pet index pages">
-              <button onClick={() => goToPage(safePage - 1)} disabled={safePage <= 1}><ChevronLeft size={15} />Previous</button>
+              <button onClick={() => goToPage(safePage - 1)} disabled={safePage <= 1}><ChevronLeft size={15} />Précédent</button>
               <span>Page <strong>{safePage}</strong> of <strong>{totalPages}</strong><small>{(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length}</small></span>
-              <button onClick={() => goToPage(safePage + 1)} disabled={safePage >= totalPages}>Next<ChevronRight size={15} /></button>
+              <button onClick={() => goToPage(safePage + 1)} disabled={safePage >= totalPages}>Suivant<ChevronRight size={15} /></button>
             </nav>
           </> : <div className="pet-index-empty"><span className="empty-search-art"><Search size={27} /><Sparkles size={13} /></span><h3>No pet matches these filters</h3><p>Try another name, tier or variant, or reset to see all tracked variants.</p><button onClick={resetFilters}>Reset all filters<ArrowRight size={14} /></button></div>}
         </section>
       </main>
 
-      <footer className="pet-index-footer"><a href={appRoute('dice')}><ArrowLeft size={13} />Back to Color Dice</a><p>RAP is a market reference, not a guaranteed trade price. Unofficial fan tool; not affiliated with BIG Games. No purchases, real inventory or real-money value.</p><a href={PS99_API_DOCS} target="_blank" rel="noreferrer">Official API<ExternalLink size={12} /></a></footer>
+      <footer className="pet-index-footer"><a href={appRoute('dice')}><ArrowLeft size={13} />Retour au Color Dice</a><p>Le RAP est une référence de marché, pas un prix garanti. Outil non officiel, sans affiliation à BIG Games. Aucun achat, inventaire réel ou valeur monétaire.</p><a href={PS99_API_DOCS} target="_blank" rel="noreferrer">API officielle<ExternalLink size={12} /></a></footer>
     </div>
   )
 }

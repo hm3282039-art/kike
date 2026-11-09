@@ -129,3 +129,6 @@
 @media (max-width:520px) { .pet-index-nav a { width: 33px; justify-content: center; padding: 0; } .pet-index-nav a > span { display: none; } }
 
 .poker-card-face.combination-highlight{outline:3px solid #c9f788;outline-offset:3px;box-shadow:0 0 22px #b1f56b88,0 8px 14px #0005;transform:translateY(-5px)}
+.poker-explanation{margin:16px;padding:16px;border:1px solid #b9ed7b55;border-radius:12px;background:#142b25;color:#e2efdc;font-size:13px;line-height:1.65}.poker-explanation strong{color:#c6f79a}.poker-explanation p{margin:7px 0}.poker-explanation small{color:#aac4b5}.dice-rounds{padding:12px;border:1px solid #4a8ad740;border-radius:12px;background:#17263c;font-size:12px;line-height:1.6;color:#aec6e3}.dice-rounds strong{color:#a6d0ff}.dice-rounds ol{padding-left:18px;margin:8px 0;max-height:140px;overflow:auto}.dice-rounds p{margin:6px 0}
+
+:is(.poker-app,.dice-only-app,.pet-index-app) button:focus-visible{outline:3px solid #97caff;outline-offset:3px}:is(.poker-app,.dice-only-app,.pet-index-app) button:disabled{cursor:not-allowed}.poker-nav{flex-wrap:wrap}.poker-nav a{white-space:nowrap}.history-main small{display:block;color:#91b5d8;font-size:10px;overflow-wrap:anywhere}

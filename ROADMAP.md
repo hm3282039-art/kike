@@ -184,3 +184,15 @@ Aucun travail n'est commencé sur : vrai multijoueur, comptes, serveur distant, 
 3. Chicken : renforcer le feedback de refuge, collision et encaissement avec sons optionnels, désactivés par défaut.
 4. Tous les jeux : harmoniser la langue française, les boutons, les messages de solde insuffisant et les indications clavier.
 5. Tous les jeux : proposer une confirmation avant de quitter une partie engagée et une reprise fiable après rechargement.
+
+
+## Version 1.6.1 — améliorations des jeux existants
+
+Les points 1 à 4 de la liste précédente sont implémentés :
+- Poker : panneau « Pourquoi ce résultat ? », comparaison de catégories, hauteur, kickers, paire du full, partage exact ou abandon. Tests reproductibles : `node tests/poker-result.cjs`.
+- Color Dice : compteur des relances, chronologie des scores dans le duel et conservation dans les nouvelles entrées d’historique. Anciennes entrées compatibles sans migration. Aucun débit supplémentaire sur égalité.
+- Poulet : feedback visuel refuge/collision/encaissement et sons synthétisés courts, opt-in, désactivés à chaque chargement. Mode reduced-motion conservé ; aucune dépendance audio réseau.
+- Français : boutons, règles, actions, explications poker, états du salon, messages des bots et écrans principaux de l’index traduits. Les noms officiels des pets, variantes et marques sont conservés.
+- Contrôles : builds normal/statique, explications moteur, relance forcée avec un seul débit, chronologie, bascule des sons, soldes du poulet, régression poker, responsive 320/390 px et navigation HTMLPreview sur les quatre pages. Les 503 du catalogue sont injectées par le test statique pour vérifier le repli hors ligne.
+
+Le point 5 (confirmation de sortie et reprise après rechargement) reste à faire, hors de cette demande.

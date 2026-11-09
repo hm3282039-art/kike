@@ -38,8 +38,8 @@ export type PokerGame = {
 }
 
 const SUITS: Suit[] = ['spades', 'hearts', 'diamonds', 'clubs']
-const CATEGORY_NAMES = ['High card', 'Pair', 'Two pair', 'Three of a kind', 'Straight', 'Flush', 'Full house', 'Four of a kind', 'Straight flush']
-const RANK_NAMES: Record<number, string> = { 14: 'Ace', 13: 'King', 12: 'Queen', 11: 'Jack', 10: 'Ten', 9: 'Nine', 8: 'Eight', 7: 'Seven', 6: 'Six', 5: 'Five', 4: 'Four', 3: 'Three', 2: 'Two' }
+const CATEGORY_NAMES = ['Carte haute', 'Paire', 'Double paire', 'Brelan', 'Suite', 'Couleur', 'Full', 'Carré', 'Quinte flush']
+const RANK_NAMES: Record<number, string> = { 14: 'As', 13: 'Roi', 12: 'Dame', 11: 'Valet', 10: 'Dix', 9: 'Neuf', 8: 'Huit', 7: 'Sept', 6: 'Six', 5: 'Cinq', 4: 'Quatre', 3: 'Trois', 2: 'Deux' }
 
 function randomInt(max: number) {
   const values = new Uint32Array(1)
@@ -89,7 +89,7 @@ function evaluateFive(cards: Card[]): HandEvaluation {
   else score = [0, ...ranks]
 
   const detail = score[0] === 8 || score[0] === 4 || score[0] === 0
-    ? `${RANK_NAMES[score[1]]} high`
+    ? `hauteur ${RANK_NAMES[score[1]]}`
     : RANK_NAMES[score[1]]
   return { score, label: `${CATEGORY_NAMES[score[0]]} · ${detail}`, cards }
 }
@@ -156,7 +156,7 @@ function settleShowdown(game: PokerGame): PokerGame {
     winner,
     playerEvaluation,
     botEvaluation,
-    message: winner === 'player' ? 'You win the Diamonds pot.' : winner === 'bot' ? `${game.botName} wins the Diamonds pot.` : 'Split pot — equal poker hands.',
+    message: winner === 'player' ? 'Tu remportes le pot de Diamonds.' : winner === 'bot' ? `${game.botName} remporte le pot de Diamonds.` : 'Pot partagé — mains de même force.',
   }
 }
 
@@ -176,7 +176,7 @@ function advanceStreet(game: PokerGame): PokerGame {
     raises: 0,
     acted: { player: false, bot: false },
     turn: game.dealer === 'player' ? 'bot' as const : 'player' as const,
-    message: `${stage[0].toUpperCase()}${stage.slice(1)} dealt.`,
+    message: `${stage} : nouvelles cartes distribuées.`,
   }
   return next
 }
@@ -208,7 +208,7 @@ export function createPokerHand(handId: number, bigBlind: number, dealer: PokerA
     winner: null,
     playerEvaluation: null,
     botEvaluation: null,
-    message: `${dealer === 'player' ? 'You are' : `${botName} is`} on the button. Blinds are in Diamonds only.`,
+    message: `${dealer === 'player' ? 'Tu es' : `${botName} est`} au bouton. Les blinds sont en Diamonds uniquement.`,
     folded: null,
   }
 }
@@ -216,9 +216,9 @@ export function createPokerHand(handId: number, bigBlind: number, dealer: PokerA
 export function applyPokerAction(game: PokerGame, actor: PokerActor, action: PokerAction): PokerGame {
   if (game.turn !== actor || game.winner || game.stage === 'idle' || game.stage === 'showdown') return game
   const opponent: PokerActor = actor === 'player' ? 'bot' : 'player'
-  const actorName = actor === 'player' ? 'You' : game.botName
+  const actorName = actor === 'player' ? 'Toi' : game.botName
   if (action === 'fold') {
-    return { ...game, stage: 'showdown', winner: opponent, folded: actor, turn: opponent, message: `${actorName} folded. ${opponent === 'player' ? 'You win' : `${game.botName} wins`} the Diamonds pot.` }
+    return { ...game, stage: 'showdown', winner: opponent, folded: actor, turn: opponent, message: `${actorName} a abandonné. ${opponent === 'player' ? 'Tu remportes' : `${game.botName} remporte`} le pot de Diamonds.` }
   }
 
   const roundKey = actor === 'player' ? 'playerRound' : 'botRound'
@@ -249,7 +249,7 @@ export function applyPokerAction(game: PokerGame, actor: PokerActor, action: Pok
       [actor]: true,
       ...(action === 'raise' ? { [opponent]: false } : {}),
     },
-    message: action === 'check' ? `${actorName} checked.` : action === 'call' ? `${actorName} called.` : `${actorName} raised the Diamonds bet.`,
+    message: action === 'check' ? `${actorName} passe sans miser.` : action === 'call' ? `${actorName} suit la mise.` : `${actorName} relance en Diamonds.`,
   }
   const roundComplete = next.acted.player && next.acted.bot && next.playerRound === next.botRound
   if (!roundComplete) return { ...next, turn: opponent }
@@ -279,4 +279,22 @@ export function combinationCards(cards: Card[]): Card[] {
   if ([4, 5, 6, 8].includes(category)) return best.cards
   const ranks = category === 2 ? best.score.slice(1, 3) : [best.score[1]]
   return best.cards.filter(card => ranks.includes(card.rank))
+}
+
+export function explainPokerResult(game: PokerGame): string {
+  if (!game.winner) return ''
+  if (game.folded) return `${game.folded === 'player' ? 'Tu as abandonné' : `${game.botName} a abandonné`} : l’autre joueur remporte le pot, sans comparaison des cartes.`
+  const a = game.playerEvaluation
+  const b = game.botEvaluation
+  if (!a || !b) return ''
+  if (game.winner === 'tie') return 'Les cinq meilleures cartes ont exactement la même force, kickers compris : le pot est partagé à parts égales.'
+  const winner = game.winner === 'player' ? a : b
+  const loser = game.winner === 'player' ? b : a
+  const subject = game.winner === 'player' ? 'Tu gagnes' : `${game.botName} gagne`
+  if (winner.score[0] !== loser.score[0]) return `${subject} : ${winner.label} bat ${loser.label}.`
+  const index = winner.score.findIndex((value, i) => value !== loser.score[i])
+  const category = winner.score[0]
+  const kickerStart = category === 2 ? 3 : category === 1 || category === 3 || category === 7 ? 2 : category === 0 ? 1 : 99
+  const reason = index >= kickerStart ? 'au kicker (carte de départage)' : category === 6 && index === 2 ? 'grâce à la paire du full' : 'à la hauteur de la combinaison'
+  return `${subject} ${reason} : ${RANK_NAMES[winner.score[index]]} contre ${RANK_NAMES[loser.score[index]]}. Les cartes sont comparées dans l’ordre jusqu’à la première différence.`
 }
